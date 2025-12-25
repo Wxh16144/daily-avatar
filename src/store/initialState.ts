@@ -2,6 +2,7 @@ import type { BaseConfigManager } from '@/lib/configManager/Base';
 import type { Config } from '@/types/config';
 
 interface UIState {
+  title: string;
   showSettings: boolean;
   showPanel: boolean;
   isUpdating: boolean;
@@ -19,6 +20,7 @@ export const initialState: AppState = {
   config: {} as Config,
   stats: {},
   ui: {
+    title: 'Daily Avatar',
     showSettings: false,
     showPanel: false,
     isUpdating: false,

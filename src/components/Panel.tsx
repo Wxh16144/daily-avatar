@@ -2,14 +2,14 @@ import { useEffect } from 'react';
 import { useStore } from '@/store';
 
 export function Panel() {
-  const { 
+  const {
     config,
-    stats, 
-    ui: { isUpdating }, 
-    toggleSettings, 
-    togglePanel, 
-    refreshStats, 
-    updateAvatar 
+    stats,
+    ui: { isUpdating, title },
+    toggleSettings,
+    togglePanel,
+    refreshStats,
+    updateAvatar
   } = useStore();
 
   // 定时更新状态
@@ -36,7 +36,7 @@ export function Panel() {
         <div class="flex items-center justify-between bg-gray-50/50 backdrop-blur-sm px-4 py-3 border-b border-gray-100/50">
           <div class="flex items-center">
             <div class="w-2.5 h-2.5 rounded-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.5)] mr-2.5"></div>
-            <h3 class="font-semibold text-gray-700 text-sm tracking-wide">头像更新器</h3>
+            <h3 class="font-semibold text-gray-700 text-sm tracking-wide">{title}</h3>
           </div>
           <div class="flex space-x-1">
             <button

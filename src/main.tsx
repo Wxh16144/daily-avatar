@@ -35,6 +35,6 @@ export function init(
 if (typeof window !== 'undefined') {
   window.daily_avatar_UI = {
     init,
-    actions: useStore.getState() as any
+    store: useStore,
   };
 }

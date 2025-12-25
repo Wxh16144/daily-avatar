@@ -1,12 +1,15 @@
-import type { AppActions } from '@/store/actions';
+import type { AppStore } from '@/store';
+import type { BaseConfigManager } from '@/lib/configManager/Base';
+import type { UseBoundStore, StoreApi } from 'zustand';
 
 declare global {
   interface Window {
+
     daily_avatar_UI: {
-      init: (configManager: any, mountPointId?: string) => {
+      init: (configManager: BaseConfigManager, mountPointId?: string) => {
         unmount: () => void;
       };
-      actions: Omit<AppActions, 'init'>;
+      store: UseBoundStore<StoreApi<AppStore>>;
     };
   }
 }
