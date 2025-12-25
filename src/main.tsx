@@ -2,11 +2,15 @@ import { h, render } from 'preact'
 import type { BaseConfigManager } from '@/lib/configManager/Base.ts';
 import './index.css'
 import { App } from './app.tsx'
+import { useStore } from '@/store';
 
 export function init(
   configManager: BaseConfigManager,
   mountPointId = 'daily-avatar-ui'
 ) {
+  // 初始化 store
+  useStore.getState().init(configManager);
+
   // 创建挂载点
   let mountPoint = document.getElementById(mountPointId);
   if (!mountPoint) {
@@ -17,7 +21,7 @@ export function init(
   }
 
   // 渲染应用
-  render(h(App, { configManager }), mountPoint);
+  render(h(App, {}), mountPoint);
 
   return {
     unmount: () => {
@@ -29,5 +33,8 @@ export function init(
 
 // 导出给油猴脚本使用
 if (typeof window !== 'undefined') {
-  window.daily_avatar_UI = { init };
+  window.daily_avatar_UI = {
+    init,
+    actions: useStore.getState() as any
+  };
 }

@@ -1,28 +1,20 @@
-import type { BaseConfigManager } from '@/lib/configManager/Base';
-import type { Config } from "@/types/config";
-import type { State } from "@/types/state";
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import { useStore } from '@/store';
 
-interface SettingsProps {
-  configManager: BaseConfigManager<Config, State>;
-  onClose: () => void;
-}
-
-export function Settings({ configManager, onClose }: SettingsProps) {
-  const [config, setConfig] = useState(() => configManager.getConfig());
+export function Settings() {
+  const { 
+    config, 
+    updateConfig, 
+    saveConfig, 
+    resetConfig, 
+    toggleSettings 
+  } = useStore();
   const [isSaving, setIsSaving] = useState(false);
 
-  const updateConfig = (
-    key: keyof Config,
-    value: Config[keyof Config]
-  ) => {
-    setConfig(prev => ({ ...prev, [key]: value }));
-  };
-
-  const saveConfig = async () => {
+  const handleSave = async () => {
     setIsSaving(true);
     try {
-      await configManager.saveConfig(config);
+      await saveConfig();
       // 显示保存成功提示
       setTimeout(() => {
         const tip = document.createElement('div');
@@ -38,10 +30,9 @@ export function Settings({ configManager, onClose }: SettingsProps) {
     }
   };
 
-  const resetConfig = () => {
+  const handleReset = async () => {
     if (confirm('确定要重置为默认设置吗？')) {
-      configManager.resetConfig();
-      setConfig(configManager.getConfig());
+      await resetConfig();
     }
   };
 
@@ -50,7 +41,7 @@ export function Settings({ configManager, onClose }: SettingsProps) {
       {/* 遮罩 */}
       <div
         class="absolute inset-0 bg-black bg-opacity-50"
-        onClick={onClose}
+        onClick={() => toggleSettings(false)}
       ></div>
 
       {/* 设置面板 */}
@@ -59,7 +50,7 @@ export function Settings({ configManager, onClose }: SettingsProps) {
         <div class="flex items-center justify-between px-6 py-4 border-b">
           <h2 class="text-xl font-bold text-gray-800">设置</h2>
           <button
-            onClick={onClose}
+            onClick={() => toggleSettings(false)}
             class="text-gray-500 hover:text-gray-700 text-2xl"
           >
             ✕
@@ -78,7 +69,7 @@ export function Settings({ configManager, onClose }: SettingsProps) {
                   <input
                     type="checkbox"
                     checked={config.enabled}
-                    onChange={(e) => updateConfig('enabled', false)}
+                    onChange={(e) => updateConfig('enabled', e.currentTarget.checked)}
                     class="mr-2"
                   />
                   <span class="text-gray-700">启用自动更新</span>
@@ -93,7 +84,7 @@ export function Settings({ configManager, onClose }: SettingsProps) {
                     min="1"
                     max="720"
                     value={config.updateInterval / (60 * 60 * 1000)}
-                    onChange={(e) => updateConfig('updateInterval', e.target.value * 60 * 60 * 1000)}
+                    onChange={(e) => updateConfig('updateInterval', parseInt(e.currentTarget.value) * 60 * 60 * 1000)}
                     class="w-full"
                   />
                   <div class="flex justify-between text-sm text-gray-600 mt-1">
@@ -110,7 +101,7 @@ export function Settings({ configManager, onClose }: SettingsProps) {
                   <input
                     type="time"
                     value={config.updateTime}
-                    onChange={(e) => updateConfig('updateTime', e.target.value)}
+                    onChange={(e) => updateConfig('updateTime', e.currentTarget.value)}
                     class="w-full px-3 py-2 border border-gray-300 rounded-lg"
                   />
                 </div>
@@ -128,7 +119,7 @@ export function Settings({ configManager, onClose }: SettingsProps) {
                   </label>
                   <select
                     value={config.avatarSource}
-                    onChange={(e) => updateConfig('avatarSource', e.target.value)}
+                    onChange={(e) => updateConfig('avatarSource', e.currentTarget.value)}
                     class="w-full px-3 py-2 border border-gray-300 rounded-lg"
                   >
                     <option value="random">随机头像</option>
@@ -146,7 +137,7 @@ export function Settings({ configManager, onClose }: SettingsProps) {
                     <input
                       type="text"
                       value={config.apiUrl}
-                      onChange={(e) => updateConfig('apiUrl', e.target.value)}
+                      onChange={(e) => updateConfig('apiUrl', e.currentTarget.value)}
                       class="w-full px-3 py-2 border border-gray-300 rounded-lg"
                       placeholder="https://api.example.com/random-avatar"
                     />
@@ -161,7 +152,7 @@ export function Settings({ configManager, onClose }: SettingsProps) {
                     <input
                       type="password"
                       value={config.unsplashKey || ''}
-                      onChange={(e) => updateConfig('unsplashKey', e.target.value)}
+                      onChange={(e) => updateConfig('unsplashKey', e.currentTarget.value)}
                       class="w-full px-3 py-2 border border-gray-300 rounded-lg"
                       placeholder="输入你的Unsplash Access Key"
                     />
@@ -182,7 +173,7 @@ export function Settings({ configManager, onClose }: SettingsProps) {
                   <input
                     type="checkbox"
                     checked={config.enableNotifications}
-                    onChange={(e) => updateConfig('enableNotifications', e.target.checked)}
+                    onChange={(e) => updateConfig('enableNotifications', e.currentTarget.checked)}
                     class="mr-2"
                   />
                   <span class="text-gray-700">启用通知</span>
@@ -192,7 +183,7 @@ export function Settings({ configManager, onClose }: SettingsProps) {
                   <input
                     type="checkbox"
                     checked={config.notifyOnSuccess}
-                    onChange={(e) => updateConfig('notifyOnSuccess', e.target.checked)}
+                    onChange={(e) => updateConfig('notifyOnSuccess', e.currentTarget.checked)}
                     class="mr-2"
                   />
                   <span class="text-gray-700">成功时通知</span>
@@ -202,7 +193,7 @@ export function Settings({ configManager, onClose }: SettingsProps) {
                   <input
                     type="checkbox"
                     checked={config.notifyOnFailure}
-                    onChange={(e) => updateConfig('notifyOnFailure', e.target.checked)}
+                    onChange={(e) => updateConfig('notifyOnFailure', e.currentTarget.checked)}
                     class="mr-2"
                   />
                   <span class="text-gray-700">失败时通知</span>
@@ -216,7 +207,7 @@ export function Settings({ configManager, onClose }: SettingsProps) {
         <div class="px-6 py-4 border-t bg-gray-50">
           <div class="flex justify-between">
             <button
-              onClick={resetConfig}
+              onClick={handleReset}
               class="px-4 py-2 border border-red-300 text-red-600 rounded-lg hover:bg-red-50 transition"
             >
               恢复默认
@@ -224,14 +215,14 @@ export function Settings({ configManager, onClose }: SettingsProps) {
 
             <div class="space-x-3">
               <button
-                onClick={onClose}
+                onClick={() => toggleSettings(false)}
                 class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition"
               >
                 取消
               </button>
 
               <button
-                onClick={saveConfig}
+                onClick={handleSave}
                 disabled={isSaving}
                 class={`px-4 py-2 bg-blue-500 text-white rounded-lg transition ${isSaving ? 'opacity-70 cursor-not-allowed' : 'hover:bg-blue-600'
                   }`}

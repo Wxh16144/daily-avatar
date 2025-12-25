@@ -1,38 +1,25 @@
-import type { BaseConfigManager } from '@/lib/configManager/Base';
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
+import { useStore } from '@/store';
 
-interface PanelProps {
-  configManager: BaseConfigManager;
-  onSettingsClick: () => void;
-  onClose: () => void;
-}
-
-export function Panel({ configManager, onSettingsClick, onClose }: PanelProps) {
-  const [stats, setStats] = useState(() => configManager.getStats());
-  const [isUpdating, setIsUpdating] = useState(false);
+export function Panel() {
+  const { 
+    config,
+    stats, 
+    ui: { isUpdating }, 
+    toggleSettings, 
+    togglePanel, 
+    refreshStats, 
+    updateAvatar 
+  } = useStore();
 
   // 定时更新状态
   useEffect(() => {
     const interval = setInterval(() => {
-      setStats(configManager.getStats());
+      refreshStats();
     }, 30000); // 30秒更新一次
 
     return () => clearInterval(interval);
-  }, []);
-
-  const updateAvatar = async () => {
-    if (isUpdating) return;
-
-    setIsUpdating(true);
-    try {
-      // await configManager.updateAvatar();
-      setStats(configManager.getStats());
-    } catch (error) {
-      console.error('更新失败:', error);
-    } finally {
-      setIsUpdating(false);
-    }
-  };
+  }, [refreshStats]);
 
   const formatTime = (timestamp: number) => {
     if (!timestamp) return '从未';
@@ -40,11 +27,6 @@ export function Panel({ configManager, onSettingsClick, onClose }: PanelProps) {
       hour: '2-digit',
       minute: '2-digit'
     });
-  };
-
-  const formatDate = (timestamp: number) => {
-    if (!timestamp) return '无';
-    return new Date(timestamp).toLocaleDateString('zh-CN');
   };
 
   return (
@@ -58,14 +40,14 @@ export function Panel({ configManager, onSettingsClick, onClose }: PanelProps) {
           </div>
           <div class="flex space-x-2">
             <button
-              onClick={onSettingsClick}
+              onClick={() => toggleSettings(true)}
               class="text-gray-500 hover:text-gray-700 transition"
               title="设置"
             >
               ⚙️
             </button>
             <button
-              onClick={onClose}
+              onClick={() => togglePanel(false)}
               class="text-gray-500 hover:text-gray-700 transition"
               title="关闭"
             >
@@ -110,12 +92,12 @@ export function Panel({ configManager, onSettingsClick, onClose }: PanelProps) {
             <div class="mb-4">
               <div class="flex justify-between text-xs text-gray-600 mb-1">
                 <span>更新进度</span>
-                <span>{Math.round((1 - stats.timeUntilNextUpdate / configManager.config.updateInterval) * 100)}%</span>
+                <span>{Math.round((1 - stats.timeUntilNextUpdate / config.updateInterval) * 100)}%</span>
               </div>
               <div class="w-full bg-gray-200 rounded-full h-2">
                 <div
                   class="bg-blue-500 h-2 rounded-full transition-all duration-300"
-                  style={{ width: `${(1 - stats.timeUntilNextUpdate / configManager.config.updateInterval) * 100}%` }}
+                  style={{ width: `${(1 - stats.timeUntilNextUpdate / config.updateInterval) * 100}%` }}
                 ></div>
               </div>
             </div>
@@ -135,7 +117,7 @@ export function Panel({ configManager, onSettingsClick, onClose }: PanelProps) {
             </button>
 
             <button
-              onClick={onSettingsClick}
+              onClick={() => toggleSettings(true)}
               class="w-full py-2 rounded-lg border border-gray-300 hover:bg-gray-50 transition duration-200 text-gray-700"
             >
               设置

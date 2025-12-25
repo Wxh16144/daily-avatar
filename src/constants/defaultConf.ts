@@ -24,5 +24,10 @@ export const DEFAULT_CONFIG = {
 
   // 调试
   debugMode: false,
-  logToConsole: true
+  logToConsole: true,
+
+  // 源设置
+  avatarSource: 'api', // 'api' | 'unsplash' | 'custom'
+  apiUrl: '',
+  unsplashKey: '',
 };
