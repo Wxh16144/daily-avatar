@@ -5,17 +5,22 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
-    "preview": "vite preview"
+    "build": "npm run build:lib && npm run build:ui",
+    "build:ui": "vite build",
+    "build:lib": "tsdown",
+    "dev:lib": "tsdown --watch"
   },
   "dependencies": {
-    "preact": "^10.27.2"
+    "idb": "^8.0.3",
+    "preact": "^10.27.2",
+    "zustand": "^5.0.9"
   },
   "devDependencies": {
     "@preact/preset-vite": "^2.10.2",
     "@tailwindcss/vite": "^4.1.18",
     "@types/node": "^24.10.1",
     "tailwindcss": "^4.1.18",
+    "tsdown": "^0.18.3",
     "typescript": "~5.9.3",
     "vite": "^7.2.4"
   }

@@ -7,10 +7,15 @@ export default defineConfig({
     preact(),
     tailwindcss(),
   ],
+  resolve: {
+    alias: {
+      '@': '/src'
+    }
+  },
   build: {
     lib: {
-      entry: './src/index.js',
-      name: 'V2EX_daily_avatar',
+      entry: './src/main.tsx',
+      name: 'daily_avatar_UI',
       fileName: 'main',
       formats: ['iife']
     },
@@ -21,7 +26,7 @@ export default defineConfig({
         manualChunks: undefined
       }
     },
-    minify: 'terser',
+    // minify: 'terser',
     cssCodeSplit: false,
     sourcemap: false
   }

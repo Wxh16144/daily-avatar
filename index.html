@@ -1,13 +1,23 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>v2ex-daily-avatar</title>
-  </head>
-  <body>
-    <div id="app"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+
+<head>
+  <meta charset="UTF-8" />
+  <title>daily-avatar</title>
+</head>
+
+<body>
+  <div id="daily-avatar-ui"></div>
+  <script type="module">
+    Promise.all([
+      import('/src/main.tsx'),
+      import('/src/lib/configManager/Browser.ts')
+    ]).then(([{ init }, { BrowserConfigManager }]) => {
+      console.log('Initializing daily-avatar UI...');
+      const configManager = new BrowserConfigManager();
+      init(configManager, 'daily-avatar-ui');
+    });
+  </script>
+</body>
+
 </html>
