@@ -1,11 +1,16 @@
 import { useStore } from '@/store';
 import { Panel } from '@/components/Panel';
 import { Settings } from '@/components/Settings';
+import { DataRefresher } from '@/components/DataRefresher';
 
 export function App() {
   const { ui: { showSettings, showPanel }, togglePanel } = useStore();
 
-  if (!showPanel) {
+  function render() {
+    if (showPanel) {
+      return showSettings ? <Settings /> : <Panel />;
+    }
+
     return (
       <div class="fixed bottom-4 right-4 z-50">
         <button
@@ -17,12 +22,13 @@ export function App() {
           </svg>
         </button>
       </div>
-    );
+    )
   }
 
-  if (showSettings) {
-    return <Settings />;
-  }
-
-  return <Panel />;
+  return (
+    <>
+      <DataRefresher />
+      {render()}
+    </>
+  );
 }

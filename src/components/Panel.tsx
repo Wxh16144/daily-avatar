@@ -8,18 +8,8 @@ export function Panel() {
     ui: { isUpdating, title },
     toggleSettings,
     togglePanel,
-    refreshStats,
     updateAvatar
   } = useStore();
-
-  // 定时更新状态
-  useEffect(() => {
-    const interval = setInterval(() => {
-      refreshStats();
-    }, 30000); // 30秒更新一次
-
-    return () => clearInterval(interval);
-  }, [refreshStats]);
 
   const formatTime = (timestamp: number) => {
     if (!timestamp) return '从未';
