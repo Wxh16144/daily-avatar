@@ -32,7 +32,7 @@ export const createActions: StateCreator<
   init: async (configManager) => {
     const config = await configManager.loadConfig();
     await configManager.loadState(); // Ensure state is loaded
-    const stats = configManager.getStats();
+    const stats = configManager.getState();
     set({ configManager, config, stats });
   },
 
@@ -105,7 +105,7 @@ export const createActions: StateCreator<
   refreshStats: () => {
     const { configManager } = get();
     if (configManager) {
-      set({ stats: configManager.getStats() });
+      set({ stats: configManager.getState() });
     }
   },
 
@@ -119,7 +119,7 @@ export const createActions: StateCreator<
       console.log('[updateAvatar] Starting avatar update...');
       await get().updateHandler?.();
       console.log('[updateAvatar] Avatar update completed.');
-      set({ stats: configManager.getStats() });
+      set({ stats: configManager.getState() });
     } catch (error) {
       console.error('Update failed:', error);
       const message = error instanceof Error ? error.message : String(error);

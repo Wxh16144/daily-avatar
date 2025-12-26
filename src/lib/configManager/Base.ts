@@ -50,30 +50,8 @@ export abstract class BaseConfigManager<TConfig extends Config = Config, TState 
     return this.state;
   }
 
-  getStats(): {
-    lastUpdateTime: number;
-    timeUntilNextUpdate: number;
-    nextUpdateTime: number;
-    hasUpdatedToday: boolean;
-    lastResult: 'success' | 'failure' | null;
-    lastErrorMessage: string | null;
-  } {
-    const now = Date.now();
-    const lastUpdate = this.state.lastUpdate;
-    
-    // 下一次更新时间
-    const nextUpdate = this.state.nextScheduledUpdate ||
-      (lastUpdate ? lastUpdate + this.config.updateInterval : now + this.config.updateInterval);
-    const timeUntilNextUpdate = Math.max(0, nextUpdate - now);
-
-    return {
-      lastUpdateTime: lastUpdate,
-      timeUntilNextUpdate: timeUntilNextUpdate,
-      nextUpdateTime: nextUpdate,
-      hasUpdatedToday: this.hasUpdatedToday(),
-      lastResult: this.state.lastResult,
-      lastErrorMessage: this.state.lastErrorMessage
-    };
+  getState(): TState {
+    return this.state;
   }
 
   hasUpdatedToday() {
