@@ -16,18 +16,18 @@ export default defineConfig({
     lib: {
       entry: './src/main.tsx',
       name: 'daily_avatar_UI',
-      fileName: 'main',
-      formats: ['iife']
+      fileName: () => 'index.js',
+      formats: ['umd'],
     },
     rollupOptions: {
       output: {
         extend: true,
         inlineDynamicImports: true,
-        manualChunks: undefined
+        manualChunks: undefined,
       }
     },
     // minify: 'terser',
     cssCodeSplit: false,
-    sourcemap: false
+    sourcemap: false,
   }
 });

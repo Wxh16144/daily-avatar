@@ -1,11 +1,25 @@
 {
-  "name": "v2ex-daily-avatar",
-  "private": true,
-  "version": "0.0.0",
+  "name": "@wuxh/daily-avatar",
+  "version": "0.0.1-alpha.1",
   "type": "module",
+  "main": "dist/index.js",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./configManager": {
+      "import": "./dist/configManager.mjs",
+      "types": "./dist/configManager.d.mts",
+      "browser": "./dist/configManager.umd.js"
+    }
+  },
   "scripts": {
     "dev": "vite",
-    "build": "npm run build:lib && npm run build:ui",
+    "build": "npm run build:ui && npm run build:lib",
     "build:ui": "vite build",
     "build:lib": "tsdown",
     "dev:lib": "tsdown --watch"
