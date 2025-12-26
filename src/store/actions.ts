@@ -12,10 +12,12 @@ export interface AppActions {
   resetConfig: () => Promise<void>;
 
   toggleSettings: (show?: boolean) => void;
-  togglePanel: (show?: boolean) => void;
-
+  togglePanel: (show: boolean) => void;
+  
   showNotification: (message: string, type?: NotificationType, duration?: number) => void;
   hideNotification: (id: string) => void;
+
+  registerUpdateHandler: (handler: () => Promise<void>) => void;
 
   refreshStats: () => void;
   updateAvatar: () => Promise<void>;
@@ -107,18 +109,24 @@ export const createActions: StateCreator<
   },
 
   updateAvatar: async () => {
-    const { configManager } = get();
-    if (!configManager) return;
+    const { configManager,updateHandler } = get();
+    if (!configManager || !updateHandler) return;
 
     set((state) => ({ ui: { ...state.ui, isUpdating: true } }));
     try {
       // implement actual update logic if available
       console.log('[updateAvatar] Starting avatar update...');
+      await get().updateHandler?.();
+      console.log('[updateAvatar] Avatar update completed.');
       set({ stats: configManager.getStats() });
     } catch (error) {
       console.error('Update failed:', error);
     } finally {
       set((state) => ({ ui: { ...state.ui, isUpdating: false } }));
     }
+  },
+
+  registerUpdateHandler: (handler) => {
+    set({ updateHandler: handler });
   },
 })

@@ -1,5 +1,5 @@
 import { DEFAULT_CONFIG } from '@/constants/defaultConf';
-import type { BaseConfigManager } from './Base';
+import type { BaseConfigManager } from '@/lib/configManager/Base';
 import { defaultState } from '@/constants/defaultState';
 import type { Config } from "@/types/config";
 import type { State } from "@/types/state";

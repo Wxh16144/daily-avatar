@@ -23,6 +23,7 @@ export interface AppState {
   config: Config;
   stats: any;
   ui: UIState;
+  updateHandler: (() => Promise<void>) | null;
 }
 
 export const initialState: AppState = {
@@ -36,4 +37,5 @@ export const initialState: AppState = {
     isUpdating: false,
     notifications: [],
   },
+  updateHandler: null,
 };

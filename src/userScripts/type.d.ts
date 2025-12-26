@@ -6,6 +6,31 @@ declare global {
   var GM_deleteValue: (key: string) => void;
   var GM_listValues: () => string[];
   var GM_notification: (details: { text: string; title?: string; image?: string; highlight?: boolean; silent?: boolean; timeout?: number; onclick?: () => void; ondone?: () => void; }) => void;
+  var GM_xmlhttpRequest: (details: {
+    method?: "GET" | "HEAD" | "POST";
+    url: string;
+    headers?: { [key: string]: string };
+    data?: string | FormData | Blob;
+    cookie?: string;
+    binary?: boolean;
+    nocache?: boolean;
+    revalidate?: boolean;
+    timeout?: number;
+    context?: any;
+    responseType?: "arraybuffer" | "blob" | "json" | "text";
+    overrideMimeType?: string;
+    anonymous?: boolean;
+    fetch?: boolean;
+    user?: string;
+    password?: string;
+    onload?: (response: any) => void;
+    onloadstart?: (response: any) => void;
+    onprogress?: (response: any) => void;
+    onreadystatechange?: (response: any) => void;
+    ontimeout?: (response: any) => void;
+    onabort?: (response: any) => void;
+    onerror?: (response: any) => void;
+  }) => { abort: () => void };
 
 }
 
