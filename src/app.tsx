@@ -8,9 +8,8 @@ export function App() {
   const { ui: { showSettings, showPanel }, togglePanel } = useStore();
 
   function render() {
-    if (showPanel) {
-      return showSettings ? <Settings /> : <Panel />;
-    }
+    if(showSettings) return <Settings />;
+    if(showPanel) return <Panel />;
 
     return (
       <div class="fixed bottom-4 right-4 z-50">

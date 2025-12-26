@@ -31,7 +31,8 @@ declare global {
     onabort?: (response: any) => void;
     onerror?: (response: any) => void;
   }) => { abort: () => void };
-
+  var GM_registerMenuCommand: (name: string, cmd: () => void, accessKey?: string) => string;
+  var GM_unregisterMenuCommand: (id: string) => void;
 }
 
 export { };

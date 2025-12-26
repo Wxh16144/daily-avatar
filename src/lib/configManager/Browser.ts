@@ -2,7 +2,7 @@ import { openDB, type DBSchema } from 'idb';
 import { DEFAULT_CONFIG } from '@/constants/defaultConf';
 import type { Config } from '@/types/config';
 import type { State } from '@/types/state';
-import type { BaseConfigManager } from './Base';
+import { BaseConfigManager } from './Base';
 
 interface AvatarDB extends DBSchema {
   'config-store': {
@@ -26,11 +26,12 @@ const dbPromise = openDB<AvatarDB>('daily-avatar', 1, {
   },
 });
 
-export class BrowserConfigManager implements BaseConfigManager<Config, State> {
+export class BrowserConfigManager extends BaseConfigManager<Config, State> {
   config: Config;
   state: State;
 
   constructor() {
+    super();
     // 初始化默认值，避免在异步加载完成前为 undefined
     this.config = { ...DEFAULT_CONFIG };
     this.state = this.getDefaultState();
@@ -74,18 +75,13 @@ export class BrowserConfigManager implements BaseConfigManager<Config, State> {
     return { ...this.config };
   }
 
-  private getDefaultState(): State {
+  protected getDefaultState(): State {
     return {
       lastUpdate: 0,
-      lastSuccess: 0,
-      lastError: null,
-      errorCount: 0,
-      successCount: 0,
-      totalUpdates: 0,
-      lastImageUrl: '',
+      lastResult: null,
+      lastErrorMessage: null,
       isUpdating: false,
       nextScheduledUpdate: 0,
-      updateHistory: []
     };
   }
 
@@ -99,150 +95,11 @@ export class BrowserConfigManager implements BaseConfigManager<Config, State> {
     return state;
   }
 
-  async saveState(newState: any): Promise<boolean> {
+  async saveState(newState: Partial<State>): Promise<boolean> {
     this.state = { ...this.state, ...newState };
-    if (this.state.updateHistory && this.state.updateHistory.length > 100) {
-      this.state.updateHistory = this.state.updateHistory.slice(-100);
-    }
     const db = await dbPromise;
     await db.put('state-store', this.state, 'avatarState');
     return true;
-  }
-
-  async recordSuccess(imageUrl = ''): Promise<State> {
-    const now = Date.now();
-    const newState: any = {
-      lastUpdate: now,
-      lastSuccess: now,
-      lastError: null,
-      successCount: this.state.successCount + 1,
-      totalUpdates: this.state.totalUpdates + 1,
-      lastImageUrl: imageUrl,
-      isUpdating: false,
-      nextScheduledUpdate: now + this.config.updateInterval,
-      updateHistory: [
-        ...(this.state.updateHistory || []),
-        {
-          timestamp: now,
-          status: 'success',
-          imageUrl: imageUrl
-        }
-      ]
-    };
-
-    await this.saveState(newState);
-    return this.state;
-  }
-
-  async recordError(error: any): Promise<State> {
-    const now = Date.now();
-    const newState: any = {
-      lastUpdate: now,
-      lastError: {
-        message: error.message,
-        timestamp: now,
-        code: error.code || 'UNKNOWN'
-      },
-      errorCount: this.state.errorCount + 1,
-      totalUpdates: this.state.totalUpdates + 1,
-      isUpdating: false,
-      updateHistory: [
-        ...(this.state.updateHistory || []),
-        {
-          timestamp: now,
-          status: 'error',
-          error: error.message
-        }
-      ]
-    };
-
-    await this.saveState(newState);
-    return this.state;
-  }
-
-  hasUpdatedToday(): boolean {
-    if (!this.state.lastSuccess) return false;
-
-    const lastUpdate = new Date(this.state.lastSuccess);
-    const today = new Date();
-
-    return (
-      lastUpdate.getDate() === today.getDate() &&
-      lastUpdate.getMonth() === today.getMonth() &&
-      lastUpdate.getFullYear() === today.getFullYear()
-    );
-  }
-
-  getStats(): any {
-    const now = Date.now();
-    const lastUpdate = this.state.lastSuccess;
-    const timeSinceLastUpdate = lastUpdate ? now - lastUpdate : null;
-
-    // 计算成功率
-    const total = this.state.totalUpdates;
-    const success = this.state.successCount;
-    const successRate = total > 0 ? Math.round((success / total) * 100) : 0;
-
-    // 下一次更新时间
-    const nextUpdate = this.state.nextScheduledUpdate ||
-      (lastUpdate ? lastUpdate + this.config.updateInterval : now + this.config.updateInterval);
-    const timeUntilNextUpdate = Math.max(0, nextUpdate - now);
-
-    return {
-      totalUpdates: total,
-      successCount: success,
-      errorCount: this.state.errorCount,
-      successRate: successRate,
-      lastUpdateTime: lastUpdate,
-      timeSinceLastUpdate: timeSinceLastUpdate,
-      timeUntilNextUpdate: timeUntilNextUpdate,
-      nextUpdateTime: nextUpdate,
-      hasUpdatedToday: this.hasUpdatedToday(),
-      lastError: this.state.lastError
-    };
-  }
-
-  cleanupOldData(daysToKeep = 30): boolean {
-    const cutoff = Date.now() - (daysToKeep * 24 * 60 * 60 * 1000);
-
-    if (this.state.updateHistory) {
-      const filteredHistory = this.state.updateHistory.filter(
-        (entry: any) => entry.timestamp >= cutoff
-      );
-
-      this.saveState({
-        updateHistory: filteredHistory
-      });
-    }
-
-    return true;
-  }
-
-  exportData(): any {
-    return {
-      config: this.config,
-      state: this.state,
-      version: '1.0',
-      exportDate: new Date().toISOString()
-    };
-  }
-
-  importData(data: any): boolean {
-    if (data.config) {
-      this.saveConfig(data.config);
-    }
-    if (data.state) {
-      this.saveState(data.state);
-    }
-    return true;
-  }
-
-  async listStorage(): Promise<string[]> {
-    const db = await dbPromise;
-    const configKeys = await db.getAllKeys('config-store');
-    const stateKeys = await db.getAllKeys('state-store');
-    // 简单的合并 key，实际可能需要区分 store
-    return [...configKeys.map(k => `config:${k}`), ...stateKeys.map(k => `state:${k}`)];
   }
 
   async clearAllData(): Promise<boolean> {

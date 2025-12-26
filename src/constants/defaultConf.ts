@@ -27,7 +27,6 @@ export const DEFAULT_CONFIG = {
   logToConsole: true,
 
   // 源设置
-  avatarSource: 'api', // 'api' | 'unsplash' | 'custom'
+  avatarSource: 'api' as const,
   apiUrl: '',
-  unsplashKey: '',
 };

@@ -22,10 +22,6 @@ export class AvatarUpdater {
     let url = '';
 
     switch (config.avatarSource) {
-      case 'unsplash':
-        // 简单的 Unsplash Source URL
-        url = `https://source.unsplash.com/random/128x128?sig=${Date.now()}`;
-        break;
       case 'api':
         url = config.apiUrl;
         break;

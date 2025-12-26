@@ -1,12 +1,9 @@
-export const defaultState = {
+import type { State } from '@/types/state';
+
+export const defaultState: State = {
   lastUpdate: 0,
-  lastSuccess: 0,
-  lastError: null,
-  errorCount: 0,
-  successCount: 0,
-  totalUpdates: 0,
-  lastImageUrl: '',
+  lastResult: null,
+  lastErrorMessage: null,
   isUpdating: false,
   nextScheduledUpdate: 0,
-  updateHistory: []
 };

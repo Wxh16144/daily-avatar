@@ -4,15 +4,15 @@ export function Header() {
   const { ui: { title }, toggleSettings, togglePanel } = useStore();
   
   return (
-    <div class="flex items-center justify-between bg-gray-50/80 backdrop-blur-sm px-4 py-3 border-b border-gray-200">
-      <div class="flex items-center">
-        <div class="w-2.5 h-2.5 rounded-full bg-blue-500 mr-2.5"></div>
-        <h3 class="font-semibold text-gray-700 text-sm tracking-wide">{title}</h3>
+    <div class="flex items-center justify-between bg-gradient-to-r from-blue-50 to-indigo-50 px-4 py-3.5 border-b border-gray-200">
+      <div class="flex items-center space-x-2">
+        <div class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></div>
+        <h3 class="font-semibold text-gray-800 text-sm">{title}</h3>
       </div>
       <div class="flex space-x-1">
         <button
           onClick={() => toggleSettings(true)}
-          class="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg"
+          class="p-1.5 text-gray-500 hover:text-blue-600 hover:bg-white/50 rounded-lg transition-colors"
           title="设置"
         >
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -22,7 +22,7 @@ export function Header() {
         </button>
         <button
           onClick={() => togglePanel(false)}
-          class="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg"
+          class="p-1.5 text-gray-500 hover:text-red-600 hover:bg-white/50 rounded-lg transition-colors"
           title="关闭"
         >
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

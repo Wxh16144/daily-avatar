@@ -1,3 +1,7 @@
-import type { defaultState } from '@/constants/defaultState';
-
-export type State = typeof defaultState;
+export interface State {
+  lastUpdate: number;
+  lastResult: 'success' | 'failure' | null;
+  lastErrorMessage: string | null;
+  isUpdating: boolean;
+  nextScheduledUpdate: number;
+}

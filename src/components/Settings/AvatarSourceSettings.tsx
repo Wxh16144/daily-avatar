@@ -18,9 +18,7 @@ export function AvatarSourceSettings() {
             class="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg focus:border-blue-500 outline-none text-sm appearance-none"
           >
             <option value="random">随机头像</option>
-            <option value="unsplash">Unsplash API</option>
             <option value="api">自定义API</option>
-            <option value="local">本地图片</option>
           </select>
         </div>
 
@@ -36,24 +34,6 @@ export function AvatarSourceSettings() {
               class="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg focus:border-blue-500 outline-none text-sm"
               placeholder="https://api.example.com/random-avatar"
             />
-          </div>
-        )}
-
-        {config.avatarSource === 'unsplash' && (
-          <div class="p-3 rounded-xl bg-gray-50/50 border border-gray-100 space-y-2">
-            <label class="block text-sm font-medium text-gray-700">
-              Unsplash Access Key
-            </label>
-            <input
-              type="password"
-              value={config.unsplashKey || ''}
-              onChange={(e) => updateConfig('unsplashKey', e.currentTarget.value)}
-              class="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm"
-              placeholder="输入你的Unsplash Access Key"
-            />
-            <p class="text-xs text-gray-500">
-              获取地址: <a href="https://unsplash.com/developers" target="_blank" rel="noopener noreferrer" class="text-blue-500 hover:underline">unsplash.com/developers</a>
-            </p>
           </div>
         )}
       </div>

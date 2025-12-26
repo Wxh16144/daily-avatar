@@ -3,54 +3,38 @@ import { useStore } from '@/store';
 export function StatusList() {
   const { stats } = useStore();
 
-  const formatTime = (timestamp: number) => {
-    if (!timestamp) return '从未';
-    return new Date(timestamp).toLocaleTimeString('zh-CN', {
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  };
-
   return (
-    <div class="space-y-2.5">
-      <div class="flex items-center justify-between text-sm">
-        <span class="text-gray-500">今日更新</span>
-        <span class={`font-medium px-2 py-0.5 rounded-full text-xs ${stats.hasUpdatedToday
-          ? 'bg-green-100 text-green-600 border border-green-200'
-          : 'bg-red-100 text-red-600 border border-red-200'
-          }`}>
-          {stats.hasUpdatedToday ? '已完成' : '未完成'}
+    <div class="space-y-3">
+      <div class="flex items-center justify-between p-3 bg-gray-50/50 rounded-lg border border-gray-100">
+        <span class="text-sm text-gray-600">今日状态</span>
+        <span class={`font-semibold px-3 py-1 rounded-full text-xs ${
+          stats.hasUpdatedToday
+            ? 'bg-green-100 text-green-700'
+            : 'bg-gray-100 text-gray-600'
+        }`}>
+          {stats.hasUpdatedToday ? '✓ 已更新' : '未更新'}
         </span>
       </div>
 
-      <div class="flex items-center justify-between text-sm">
-        <span class="text-gray-500">成功率</span>
-        <div class="flex items-center space-x-2">
-          <div class="w-16 h-1.5 bg-gray-100 rounded-full overflow-hidden">
-            <div
-              class={`h-full rounded-full ${stats.successRate >= 90 ? 'bg-green-500' :
-                stats.successRate >= 70 ? 'bg-yellow-500' : 'bg-red-500'
-                }`}
-              style={{ width: `${stats.successRate}%` }}
-            ></div>
+      {stats.lastResult && (
+        <div class={`p-3 rounded-lg border ${
+          stats.lastResult === 'success'
+            ? 'bg-green-50/50 border-green-100'
+            : 'bg-red-50/50 border-red-100'
+        }`}>
+          <div class="flex items-start justify-between">
+            <span class="text-sm text-gray-600">上次结果</span>
+            <span class={`font-semibold text-xs ${
+              stats.lastResult === 'success' ? 'text-green-700' : 'text-red-700'
+            }`}>
+              {stats.lastResult === 'success' ? '✓ 成功' : '✗ 失败'}
+            </span>
           </div>
-          <span class="font-medium text-gray-700 text-xs">{stats.successRate}%</span>
+          {stats.lastErrorMessage && (
+            <p class="text-xs text-red-600 mt-2 leading-relaxed">{stats.lastErrorMessage}</p>
+          )}
         </div>
-      </div>
-
-      <div class="flex items-center justify-between text-sm">
-        <span class="text-gray-500">上次更新</span>
-        <span class="text-gray-700 font-medium text-xs bg-gray-50 px-2 py-0.5 rounded border border-gray-100">
-          {formatTime(stats.lastUpdateTime)}
-        </span>
-      </div>
-
-      <div class="flex items-center justify-between text-sm">
-        <span class="text-gray-500">下次更新</span>
-        <span class="text-gray-700 font-medium text-xs bg-gray-50 px-2 py-0.5 rounded border border-gray-100">
-          {formatTime(stats.nextUpdateTime)}
-        </span>
-      </div>
+      )}
     </div>
   );
 }

@@ -28,9 +28,35 @@ async function main() {
   init(configManager);
 
   // 注册更新处理函数
-  store.getState().registerUpdateHandler(async () => {
-    await updater.execute();
-  });
+  store
+    .getState()
+    .registerUpdateHandler(updater.execute.bind(updater));
+
+  // 注册菜单命令
+  try {
+    GM_registerMenuCommand('⚙️ 打开设置', () => {
+      store.getState().toggleSettings();
+    });
+
+    GM_registerMenuCommand('📊 查看状态', () => {
+      store.getState().togglePanel();
+    });
+
+    GM_registerMenuCommand('🔄 立即更新', () => {
+      store.getState().updateAvatar();
+    });
+
+    GM_registerMenuCommand('🗑️ 重置所有数据', () => {
+      if (confirm('确定要重置所有数据吗？这将清除所有设置和统计信息。')) {
+        configManager.clearAllData();
+        store.getState().showNotification('数据已重置', 'warning');
+        // 刷新 store 中的配置
+        store.getState().init(configManager);
+      }
+    });
+  } catch (e) {
+    console.log('菜单命令注册失败（某些管理器可能不支持）:', e);
+  }
 
   console.log('V2EX Daily Avatar initialized');
 }

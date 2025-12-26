@@ -13,7 +13,7 @@ export interface AppActions {
 
   toggleSettings: (show?: boolean) => void;
   togglePanel: (show: boolean) => void;
-  
+
   showNotification: (message: string, type?: NotificationType, duration?: number) => void;
   hideNotification: (id: string) => void;
 
@@ -31,6 +31,7 @@ export const createActions: StateCreator<
 > = (set, get) => ({
   init: async (configManager) => {
     const config = await configManager.loadConfig();
+    await configManager.loadState(); // Ensure state is loaded
     const stats = configManager.getStats();
     set({ configManager, config, stats });
   },
@@ -109,7 +110,7 @@ export const createActions: StateCreator<
   },
 
   updateAvatar: async () => {
-    const { configManager,updateHandler } = get();
+    const { configManager, updateHandler } = get();
     if (!configManager || !updateHandler) return;
 
     set((state) => ({ ui: { ...state.ui, isUpdating: true } }));
@@ -121,6 +122,8 @@ export const createActions: StateCreator<
       set({ stats: configManager.getStats() });
     } catch (error) {
       console.error('Update failed:', error);
+      const message = error instanceof Error ? error.message : String(error);
+      get().showNotification(`失败: ${message}`, 'error', 5000);
     } finally {
       set((state) => ({ ui: { ...state.ui, isUpdating: false } }));
     }

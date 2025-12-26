@@ -1,5 +1,6 @@
 import type { BaseConfigManager } from '@/lib/configManager/Base';
 import type { Config } from '@/types/config';
+import type { State } from '@/types/state';
 
 export type NotificationType = 'success' | 'error' | 'warning' | 'info';
 
@@ -21,7 +22,7 @@ interface UIState {
 export interface AppState {
   configManager: BaseConfigManager | null;
   config: Config;
-  stats: any;
+  stats: State;
   ui: UIState;
   updateHandler: (() => Promise<void>) | null;
 }
@@ -29,7 +30,7 @@ export interface AppState {
 export const initialState: AppState = {
   configManager: null,
   config: {} as Config,
-  stats: {},
+  stats: {} as State,
   ui: {
     title: 'Daily Avatar',
     showSettings: false,
