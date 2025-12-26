@@ -12,7 +12,7 @@ dist
 dist-ssr
 *.local
 
-userscripts
+userscripts/*.user.js
 
 # Editor directories and files
 .vscode/*
