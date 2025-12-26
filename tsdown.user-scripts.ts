@@ -14,7 +14,7 @@ const sharedBanner = {
 
 interface ScriptConfig {
   id: string
-  banner: Record<string, string>
+  banner: Record<string, string | string[]>
 }
 
 const scripts: ScriptConfig[] = [
@@ -23,13 +23,32 @@ const scripts: ScriptConfig[] = [
     banner: {
       // 每天自动更新 V2EX 头像
       name: 'V2EX Daily Avatar',
+      namespace: 'https://github.com/wxh16144/daily-avatar',
       version: pkg.version,
       description: 'Automatically update V2EX avatar daily.',
-      grant: 'unsafeWindow',
+      icon: 'https://www.v2ex.com/static/img/icon_rayps_64.png',
+      match: [
+        '*://v2ex.com/*',
+        '*://www.v2ex.com/*',
+      ],
+      include: '*',
+      grant: [
+        'unsafeWindow',
+        'GM_xmlhttpRequest',
+        'GM_setValue',
+        'GM_getValue',
+        'GM_registerMenuCommand',
+        'GM_unregisterMenuCommand',
+      ],
+      connect: [
+        'source.unsplash.com',
+        'api.dicebear.com',
+        '*',
+      ],
+      require: `https://unpkg.com/@wuxh/daily-avatar@${pkg.version}`,
       ...sharedBanner,
       'run-at': 'document-start',
       noframes: '',
-      include: '*',
     },
   },
 ]
@@ -45,7 +64,7 @@ export default defineConfig(
         entryFileNames: `${script.id}.user.js`,
       },
       clean: false,
-      outDir:'userscripts',
+      outDir: 'userscripts',
       banner: generateBanner({
         ...script.banner,
         ...sharedBanner,
@@ -54,11 +73,14 @@ export default defineConfig(
   }),
 )
 
-function generateBanner(properties: Record<string, string>) {
+function generateBanner(properties: Record<string, string | string[]>) {
   const maxLength = Math.max(
     ...Object.keys(properties).map((key) => key.length),
   )
-  const lines = Object.entries(properties).map(([key, value]) => {
+  const lines = Object.entries(properties).flatMap(([key, value]) => {
+    if (Array.isArray(value)) {
+      return value.map((v) => `// @${key.padEnd(maxLength + 1)} ${v}`)
+    }
     return `// @${key.padEnd(maxLength + 1)} ${value}`
   })
   return `// ==UserScript==
