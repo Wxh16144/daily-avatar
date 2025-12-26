@@ -8,16 +8,17 @@ export function BasicSettings() {
       <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider">基本设置</h3>
 
       <div class="space-y-4">
-        <label class="flex items-center justify-between group cursor-pointer p-3 rounded-xl hover:bg-gray-50/80 transition-colors border border-transparent hover:border-gray-100">
+        <label class="flex items-center justify-between group cursor-pointer p-3 rounded-xl hover:bg-gray-50 border border-transparent hover:border-gray-200">
           <span class="text-gray-700 font-medium">启用自动更新</span>
           <div class="relative inline-flex items-center cursor-pointer">
             <input
               type="checkbox"
               checked={config.enabled}
               onChange={(e) => updateConfig('enabled', e.currentTarget.checked)}
-              class="sr-only peer"
+              class="sr-only"
             />
-            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+            <div class={`w-11 h-6 rounded-full border ${config.enabled ? 'bg-blue-600 border-blue-600' : 'bg-gray-200 border-gray-200'}`}></div>
+            <div class={`absolute top-1 bg-white border border-gray-300 rounded-full h-4 w-4 ${config.enabled ? 'left-[22px] border-white' : 'left-1'}`}></div>
           </div>
         </label>
 

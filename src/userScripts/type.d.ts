@@ -5,6 +5,7 @@ declare global {
   var GM_setValue: (key: string, value: any) => void;
   var GM_deleteValue: (key: string) => void;
   var GM_listValues: () => string[];
+  var GM_notification: (details: { text: string; title?: string; image?: string; highlight?: boolean; silent?: boolean; timeout?: number; onclick?: () => void; ondone?: () => void; }) => void;
 
 }
 

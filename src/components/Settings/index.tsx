@@ -1,29 +1,32 @@
-import { useState } from 'preact/hooks';
+import { useState, useRef } from 'preact/hooks';
 import { useStore } from '@/store';
 import { BasicSettings } from './BasicSettings';
 import { AvatarSourceSettings } from './AvatarSourceSettings';
 import { NotificationSettings } from './NotificationSettings';
 
 export function Settings() {
-  const { 
-    saveConfig, 
-    resetConfig, 
-    toggleSettings 
+  const {
+    saveConfig,
+    resetConfig,
+    toggleSettings
   } = useStore();
   const [isSaving, setIsSaving] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const handleSave = async () => {
     setIsSaving(true);
     try {
       await saveConfig();
       // 显示保存成功提示
-      setTimeout(() => {
-        const tip = document.createElement('div');
-        tip.className = 'fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg z-50';
-        tip.textContent = '设置已保存';
-        document.body.appendChild(tip);
-        setTimeout(() => tip.remove(), 2000);
-      }, 100);
+      const msg = '设置已保存';
+      const root = containerRef.current?.getRootNode();
+      const target = (root instanceof ShadowRoot) ? root : document.body;
+
+      const tip = document.createElement('div');
+      tip.className = 'fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg z-50 animate-fadeIn';
+      tip.textContent = msg;
+      target.appendChild(tip);
+      setTimeout(() => tip.remove(), 2000);
     } catch (error) {
       console.error('保存失败:', error);
     } finally {
@@ -38,7 +41,7 @@ export function Settings() {
   };
 
   return (
-    <div class="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-sm bg-black/30 transition-all duration-300">
+    <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/20 backdrop-blur-sm" ref={containerRef}>
       {/* 遮罩 */}
       <div
         class="absolute inset-0"
@@ -46,13 +49,13 @@ export function Settings() {
       ></div>
 
       {/* 设置面板 */}
-      <div class="relative bg-white/90 backdrop-blur-xl rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-hidden border border-white/20 transform transition-all duration-300 scale-100">
+      <div class="relative bg-white rounded-xl w-full max-w-md max-h-[90vh] overflow-hidden panel-style">
         {/* 标题 */}
-        <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100/50 bg-white/50 backdrop-blur-sm">
+        <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200 bg-gray-50/50">
           <h2 class="text-lg font-semibold text-gray-800 tracking-tight">设置</h2>
           <button
             onClick={() => toggleSettings(false)}
-            class="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100/50 rounded-full transition-all duration-200"
+            class="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-200 rounded-lg"
           >
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -70,11 +73,11 @@ export function Settings() {
         </div>
 
         {/* 底部按钮 */}
-        <div class="px-6 py-4 border-t border-gray-100/50 bg-gray-50/50 backdrop-blur-sm">
+        <div class="px-6 py-4 border-t border-gray-200 bg-gray-50/50">
           <div class="flex justify-between items-center">
             <button
               onClick={handleReset}
-              class="text-sm text-red-500 hover:text-red-600 hover:bg-red-50 px-3 py-2 rounded-lg transition-colors"
+              class="text-sm text-red-600 hover:text-red-700 hover:bg-red-50 px-3 py-2 rounded-lg"
             >
               恢复默认
             </button>
@@ -82,7 +85,7 @@ export function Settings() {
             <div class="space-x-3 flex">
               <button
                 onClick={() => toggleSettings(false)}
-                class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors"
+                class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-800 hover:bg-gray-200 rounded-lg border border-transparent"
               >
                 取消
               </button>
@@ -90,9 +93,9 @@ export function Settings() {
               <button
                 onClick={handleSave}
                 disabled={isSaving}
-                class={`px-5 py-2 text-sm font-medium text-white rounded-lg shadow-lg shadow-blue-500/30 transition-all ${isSaving
-                  ? 'bg-blue-400 cursor-not-allowed'
-                  : 'bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 hover:shadow-blue-500/40 active:scale-[0.98]'
+                class={`px-5 py-2 text-sm font-medium text-white rounded-lg border ${isSaving
+                  ? 'bg-blue-400 border-blue-400 cursor-not-allowed'
+                  : 'bg-blue-600 border-blue-600 hover:bg-blue-700 active:bg-blue-800'
                   }`}
               >
                 {isSaving ? '保存中...' : '保存设置'}
