@@ -15,6 +15,17 @@
       console.log('Initializing daily-avatar UI...');
       const configManager = new BrowserConfigManager();
       init(configManager);
+
+      if (typeof window.daily_avatar_UI !== 'undefined') {
+        const { store } = window.daily_avatar_UI;
+        store.getState().registerUpdateHandler(() => {
+          globalThis.console.log(
+            '%c@daily-avatar/store',
+            'color: green; font-weight: bold; font-size: 1rem;',
+          );
+          console.log('State:', store.getState());
+        });
+      }
     });
   </script>
 </body>
