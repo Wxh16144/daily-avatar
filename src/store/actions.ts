@@ -11,9 +11,9 @@ export interface AppActions {
   saveConfig: () => Promise<void>;
   resetConfig: () => Promise<void>;
 
-  toggleSettings: (show: boolean) => void;
-  togglePanel: (show: boolean) => void;
-  
+  toggleSettings: (show?: boolean) => void;
+  togglePanel: (show?: boolean) => void;
+
   showNotification: (message: string, type?: NotificationType, duration?: number) => void;
   hideNotification: (id: string) => void;
 
@@ -55,8 +55,24 @@ export const createActions: StateCreator<
     }
   },
 
-  toggleSettings: (show) => set((state) => ({ ui: { ...state.ui, showSettings: show } })),
-  togglePanel: (show) => set((state) => ({ ui: { ...state.ui, showPanel: show } })),
+  toggleSettings: (show) => set(
+    (state) => ({
+      ui: {
+        ...state.ui,
+        showSettings: show ?? !state.ui.showSettings
+      }
+    })
+  ),
+
+
+  togglePanel: (show) => set(
+    (state) => ({
+      ui: {
+        ...state.ui,
+        showPanel: show ?? !state.ui.showPanel
+      }
+    })
+  ),
 
   showNotification: (message, type = 'info', duration = 3000) => {
     const id = Date.now().toString() + Math.random().toString(36).slice(2, 9);
