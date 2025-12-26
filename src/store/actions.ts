@@ -3,6 +3,7 @@ import type { StateCreator } from 'zustand/vanilla';
 import type { AppStore } from '.';
 import type { Config } from '@/types/config';
 import type { BaseConfigManager } from '@/lib/configManager/Base';
+import type { NotificationType } from './initialState';
 
 export interface AppActions {
   init: (configManager: BaseConfigManager) => Promise<void>;
@@ -12,6 +13,9 @@ export interface AppActions {
 
   toggleSettings: (show: boolean) => void;
   togglePanel: (show: boolean) => void;
+  
+  showNotification: (message: string, type?: NotificationType, duration?: number) => void;
+  hideNotification: (id: string) => void;
 
   refreshStats: () => void;
   updateAvatar: () => Promise<void>;
@@ -53,6 +57,31 @@ export const createActions: StateCreator<
 
   toggleSettings: (show) => set((state) => ({ ui: { ...state.ui, showSettings: show } })),
   togglePanel: (show) => set((state) => ({ ui: { ...state.ui, showPanel: show } })),
+
+  showNotification: (message, type = 'info', duration = 3000) => {
+    const id = Date.now().toString() + Math.random().toString(36).slice(2, 9);
+    set((state) => ({
+      ui: {
+        ...state.ui,
+        notifications: [...state.ui.notifications, { id, type, message, duration }]
+      }
+    }));
+
+    if (duration > 0) {
+      setTimeout(() => {
+        get().hideNotification(id);
+      }, duration);
+    }
+  },
+
+  hideNotification: (id) => {
+    set((state) => ({
+      ui: {
+        ...state.ui,
+        notifications: state.ui.notifications.filter((n) => n.id !== id)
+      }
+    }));
+  },
 
   refreshStats: () => {
     const { configManager } = get();

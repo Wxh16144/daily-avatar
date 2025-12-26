@@ -1,11 +1,21 @@
 import type { BaseConfigManager } from '@/lib/configManager/Base';
 import type { Config } from '@/types/config';
 
+export type NotificationType = 'success' | 'error' | 'warning' | 'info';
+
+export interface Notification {
+  id: string;
+  type: NotificationType;
+  message: string;
+  duration?: number;
+}
+
 interface UIState {
   title: string;
   showSettings: boolean;
   showPanel: boolean;
   isUpdating: boolean;
+  notifications: Notification[];
 }
 
 export interface AppState {
@@ -24,5 +34,6 @@ export const initialState: AppState = {
     showSettings: false,
     showPanel: false,
     isUpdating: false,
+    notifications: [],
   },
 };

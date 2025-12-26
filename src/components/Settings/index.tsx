@@ -8,27 +8,19 @@ export function Settings() {
   const {
     saveConfig,
     resetConfig,
-    toggleSettings
+    toggleSettings,
+    showNotification
   } = useStore();
   const [isSaving, setIsSaving] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
 
   const handleSave = async () => {
     setIsSaving(true);
     try {
       await saveConfig();
-      // 显示保存成功提示
-      const msg = '设置已保存';
-      const root = containerRef.current?.getRootNode();
-      const target = (root instanceof ShadowRoot) ? root : document.body;
-
-      const tip = document.createElement('div');
-      tip.className = 'fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg z-50 animate-fadeIn';
-      tip.textContent = msg;
-      target.appendChild(tip);
-      setTimeout(() => tip.remove(), 2000);
+      showNotification('设置已保存', 'success');
     } catch (error) {
       console.error('保存失败:', error);
+      showNotification('保存失败', 'error');
     } finally {
       setIsSaving(false);
     }
@@ -41,7 +33,7 @@ export function Settings() {
   };
 
   return (
-    <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/20 backdrop-blur-sm" ref={containerRef}>
+    <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/20 backdrop-blur-sm">
       {/* 遮罩 */}
       <div
         class="absolute inset-0"

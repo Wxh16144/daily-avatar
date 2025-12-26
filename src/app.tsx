@@ -2,6 +2,7 @@ import { useStore } from '@/store';
 import { Panel } from '@/components/Panel';
 import { Settings } from '@/components/Settings';
 import { DataRefresher } from '@/components/DataRefresher';
+import { NotificationList } from '@/components/Notification';
 
 export function App() {
   const { ui: { showSettings, showPanel }, togglePanel } = useStore();
@@ -28,6 +29,7 @@ export function App() {
   return (
     <>
       <DataRefresher />
+      <NotificationList />
       {render()}
     </>
   );
