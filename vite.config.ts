@@ -4,7 +4,9 @@ import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
   plugins: [
-    preact(),
+    preact({
+      reactAliasesEnabled: false
+    }),
     tailwindcss(),
   ],
   resolve: {

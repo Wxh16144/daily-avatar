@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState } from 'preact/hooks';
 import { useStore } from '@/store';
 import { BasicSettings } from './BasicSettings';
 import { AvatarSourceSettings } from './AvatarSourceSettings';
