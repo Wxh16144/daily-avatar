@@ -1,5 +1,6 @@
 import { TampermonkeyConfigManager } from '../Tampermonkey';
 import { AvatarUpdater } from './AvatarUpdater';
+import { APP_META } from '@/constants/meta';
 
 // 等待 UI 库加载
 const waitForUI = () => {
@@ -25,7 +26,9 @@ async function main() {
 
   // 初始化 UI
   const { init, store } = window.daily_avatar_UI;
-  init(configManager);
+  init(configManager, 'daily-avatar-ui', {
+    title: 'V2EX Daily Avatar'
+  });
 
   // 注册更新处理函数
   store
@@ -58,7 +61,7 @@ async function main() {
     console.log('菜单命令注册失败（某些管理器可能不支持）:', e);
   }
 
-  console.log('V2EX Daily Avatar initialized');
+  console.log(`${APP_META.name} initialized`);
 }
 
 main();

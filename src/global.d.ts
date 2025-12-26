@@ -1,14 +1,18 @@
 import type { BaseConfigManager } from '@/lib/configManager/Base';
 import type { useStore } from '@/store';
+import type { AppConfig } from '@/types/appConfig';
 
 declare global {
   interface Window {
-
     daily_avatar_UI: {
-      init: (configManager: BaseConfigManager, mountPointId?: string) => {
+      init: (
+        configManager: BaseConfigManager,
+        config?: Partial<AppConfig>,
+        mountPointId?: string,
+      ) => {
         unmount: () => void;
       };
-      store: useStore;
+      store: typeof useStore;
     };
   }
 }

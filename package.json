@@ -31,6 +31,10 @@
     "dev:userscripts": "tsdown -c ./tsdown.user-scripts.ts --watch",
     "prepublishOnly": "npm run build"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com:wxh16144/daily-avatar.git"
+  },
   "publishConfig": {
     "access": "public"
   },

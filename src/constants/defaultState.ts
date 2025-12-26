@@ -6,4 +6,5 @@ export const defaultState: State = {
   lastErrorMessage: null,
   isUpdating: false,
   nextScheduledUpdate: 0,
+  history: [],
 };

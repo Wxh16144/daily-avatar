@@ -4,15 +4,17 @@ import type { AppStore } from '.';
 import type { Config } from '@/types/config';
 import type { BaseConfigManager } from '@/lib/configManager/Base';
 import type { NotificationType } from './initialState';
+import type { AppConfig } from '@/types/appConfig';
+import { DEFAULT_APP_CONFIG } from '@/constants/appConfig';
 
 export interface AppActions {
-  init: (configManager: BaseConfigManager) => Promise<void>;
+  init: (configManager: BaseConfigManager, config?: Partial<AppConfig>) => Promise<void>;
   updateConfig: (key: keyof Config, value: any) => void;
   saveConfig: () => Promise<void>;
   resetConfig: () => Promise<void>;
 
   toggleSettings: (show?: boolean) => void;
-  togglePanel: (show: boolean) => void;
+  togglePanel: (show?: boolean) => void;
 
   showNotification: (message: string, type?: NotificationType, duration?: number) => void;
   hideNotification: (id: string) => void;
@@ -29,11 +31,22 @@ export const createActions: StateCreator<
   [],
   AppActions
 > = (set, get) => ({
-  init: async (configManager) => {
+  init: async (configManager, appConfig) => {
     const config = await configManager.loadConfig();
     await configManager.loadState(); // Ensure state is loaded
     const stats = configManager.getState();
-    set({ configManager, config, stats });
+    
+    const finalAppConfig = { ...DEFAULT_APP_CONFIG, ...appConfig };
+
+    set((state) => ({ 
+      configManager, 
+      config, 
+      stats,
+      ui: {
+        ...state.ui,
+        title: finalAppConfig.title
+      }
+    }));
   },
 
   updateConfig: (key, value) => {

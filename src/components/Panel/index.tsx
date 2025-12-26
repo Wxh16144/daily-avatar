@@ -2,6 +2,7 @@ import { Header } from './Header';
 import { StatusList } from './StatusList';
 import { ProgressBar } from './ProgressBar';
 import { UpdateControl } from './UpdateControl';
+import { HistoryList } from './HistoryList';
 import { Footer } from './Footer';
 
 export function Panel() {
@@ -25,6 +26,7 @@ export function Panel() {
           <StatusList />
           <ProgressBar />
           <UpdateControl />
+          <HistoryList />
         </div>
 
         <Footer />

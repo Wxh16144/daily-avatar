@@ -14,7 +14,9 @@
     ]).then(([{ init }, { BrowserConfigManager }]) => {
       console.log('Initializing daily-avatar UI...');
       const configManager = new BrowserConfigManager();
-      init(configManager);
+      init(configManager, {
+        title: 'Daily Avatar Demo',
+      });
 
       const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -25,12 +27,12 @@
           const delay = Math.floor(Math.random() * 3000) + 2000;
           console.log(`Waiting for ${delay} ms before recording update result...`);
           await sleep(delay);
-          
+
           globalThis.console.log(
             '%c@daily-avatar/store',
             'color: green; font-weight: bold; font-size: 1rem;',
           );
-        
+
           // 随机记录成功/失败
           if (Math.random() > 0.5) {
             console.log('%cUpdate succeeded!', 'color: blue;');

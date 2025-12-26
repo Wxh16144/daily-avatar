@@ -70,6 +70,7 @@ export class TampermonkeyConfigManager extends BaseConfigManager<Config, State> 
       lastErrorMessage: null,
       isUpdating: false,
       nextScheduledUpdate: 0,
+      history: [],
     };
   }
 }

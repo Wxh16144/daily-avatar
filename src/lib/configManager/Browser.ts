@@ -82,7 +82,12 @@ export class BrowserConfigManager extends BaseConfigManager<Config, State> {
       lastErrorMessage: null,
       isUpdating: false,
       nextScheduledUpdate: 0,
+      history: [],
     };
+  }
+
+  async listStorage(): Promise<string[]> {
+    return ['avatarConfig', 'avatarState'];
   }
 
   async loadState(): Promise<State> {

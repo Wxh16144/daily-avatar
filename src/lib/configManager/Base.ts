@@ -1,5 +1,5 @@
 import type { Config } from '@/types/config';
-import type { State } from '@/types/state';
+import type { State, UpdateLog } from '@/types/state';
 
 // 通用配置管理基类
 export abstract class BaseConfigManager<TConfig extends Config = Config, TState extends State = State> {
@@ -19,12 +19,16 @@ export abstract class BaseConfigManager<TConfig extends Config = Config, TState 
 
   recordSuccess(): TState | Promise<TState> {
     const now = Date.now();
+    const newLog: UpdateLog = { timestamp: now, result: 'success' };
+    const history = [newLog, ...(this.state.history || [])].slice(0, 20);
+
     const newState: Partial<TState> = {
       lastUpdate: now,
       lastResult: 'success' as const,
       lastErrorMessage: null,
       isUpdating: false,
       nextScheduledUpdate: now + this.config.updateInterval,
+      history,
     } as Partial<TState>;
 
     const result = this.saveState(newState);
@@ -36,11 +40,15 @@ export abstract class BaseConfigManager<TConfig extends Config = Config, TState 
 
   recordError(error: Error | { message: string }): TState | Promise<TState> {
     const now = Date.now();
+    const newLog: UpdateLog = { timestamp: now, result: 'failure', message: error.message || 'Unknown error' };
+    const history = [newLog, ...(this.state.history || [])].slice(0, 20);
+
     const newState: Partial<TState> = {
       lastUpdate: now,
       lastResult: 'failure' as const,
       lastErrorMessage: error.message || 'Unknown error',
       isUpdating: false,
+      history,
     } as Partial<TState>;
 
     const result = this.saveState(newState);

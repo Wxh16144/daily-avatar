@@ -1,15 +1,20 @@
 import { h, render } from 'preact'
 import type { BaseConfigManager } from '@/lib/configManager/Base.ts';
+import type { AppConfig } from '@/types/appConfig';
 import styles from './index.css?inline'
 import { App } from './app.tsx'
 import { useStore } from '@/store';
 
+export { useStore as store } from '@/store';
+
 export function init(
   configManager: BaseConfigManager,
-  mountPointId = 'daily-avatar-ui'
+  config?: Partial<AppConfig>,
+  mountPointId = 'daily-avatar-ui',
 ) {
+
   // 初始化 store
-  useStore.getState().init(configManager);
+  useStore.getState().init(configManager, config);
 
   // 创建宿主元素 (Shadow Host)
   let container = document.getElementById(mountPointId);
