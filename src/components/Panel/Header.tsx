@@ -4,10 +4,16 @@ export function Header() {
   const { ui: { title }, toggleSettings, togglePanel } = useStore();
   
   return (
-    <div class="flex items-center justify-between bg-gradient-to-r from-blue-50 to-indigo-50 px-4 py-3.5 border-b border-gray-200">
+    <div 
+      class="flex items-center justify-between bg-gradient-to-r from-blue-50 to-indigo-50 px-4 py-3.5 border-b border-gray-200"
+      style={{
+        background: 'linear-gradient(to right, #eff6ff, #eef2ff)',
+        borderBottom: '1px solid #e5e7eb'
+      }}
+    >
       <div class="flex items-center space-x-2">
-        <div class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></div>
-        <h3 class="font-semibold text-gray-800 text-sm">{title}</h3>
+        <div class="w-2 h-2 rounded-full bg-blue-500 animate-pulse" style={{ backgroundColor: '#3b82f6' }}></div>
+        <h3 class="font-semibold text-gray-800 text-sm" style={{ color: '#1f2937', fontWeight: 600 }}>{title}</h3>
       </div>
       <div class="flex space-x-1">
         <button

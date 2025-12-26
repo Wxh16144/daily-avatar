@@ -1,4 +1,5 @@
 import { useStore } from '@/store';
+import { formatDuration } from '@/utils/format';
 
 export function BasicSettings() {
   const { config, updateConfig } = useStore();
@@ -38,13 +39,7 @@ export function BasicSettings() {
             <div class="flex justify-between text-xs text-gray-500 font-medium">
               <span>1小时</span>
               <span class="text-blue-600">
-                {(() => {
-                  const hours = Math.floor(config.updateInterval / (60 * 60 * 1000));
-                  if (hours < 24) return `${hours}小时`;
-                  const days = Math.floor(hours / 24);
-                  const rest = hours % 24;
-                  return rest > 0 ? `${days}天${rest}小时` : `${days}天`;
-                })()}
+                {formatDuration(config.updateInterval)}
               </span>
               <span>7天</span>
             </div>
