@@ -1,6 +1,5 @@
-import type { AppStore } from '@/store';
 import type { BaseConfigManager } from '@/lib/configManager/Base';
-import type { UseBoundStore, StoreApi } from 'zustand';
+import type { useStore } from '@/store';
 
 declare global {
   interface Window {
@@ -9,7 +8,7 @@ declare global {
       init: (configManager: BaseConfigManager, mountPointId?: string) => {
         unmount: () => void;
       };
-      store: UseBoundStore<StoreApi<AppStore>>;
+      store: useStore;
     };
   }
 }

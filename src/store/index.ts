@@ -23,9 +23,7 @@ export const store = createStore<AppStore>()(
   subscribeWithSelector(devtools(storeCreator, { name: 'daily_avatar_UI' })),
 );
 
-export function useStore(): AppStore;
-export function useStore<T>(selector: (state: AppStore) => T): T;
-export function useStore<T>(selector?: (state: AppStore) => T) {
+export const useStore = function <T>(selector?: (state: AppStore) => T) {
   const [state, setState] = useState(() => 
     selector ? selector(store.getState()) : store.getState()
   );
@@ -41,9 +39,15 @@ export function useStore<T>(selector?: (state: AppStore) => T) {
     return unsubscribe;
   }, [selector]);
 
-  return state;
-}
+  return state as T;
+} as {
+  (): AppStore;
+  <T>(selector: (state: AppStore) => T): T;
+  getState: typeof store.getState;
+  setState: typeof store.setState;
+  subscribe: typeof store.subscribe;
+};
 
-(useStore as any).getState = store.getState;
-(useStore as any).setState = store.setState;
-(useStore as any).subscribe = store.subscribe;
+useStore.getState = store.getState;
+useStore.setState = store.setState;
+useStore.subscribe = store.subscribe;
