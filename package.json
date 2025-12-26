@@ -4,7 +4,8 @@
   "type": "module",
   "main": "dist/index.js",
   "files": [
-    "dist"
+    "dist",
+    "userscripts"
   ],
   "exports": {
     ".": {
@@ -15,14 +16,20 @@
       "import": "./dist/configManager.mjs",
       "types": "./dist/configManager.d.mts",
       "browser": "./dist/configManager.umd.js"
+    },
+    "./userscripts/*": {
+      "default": "./userscripts/*.user.js"
     }
   },
   "scripts": {
     "dev": "vite",
-    "build": "npm run build:ui && npm run build:lib",
+    "build": "npm run build:ui && npm run build:lib && npm run build:userscripts",
     "build:ui": "vite build",
-    "build:lib": "tsdown",
-    "dev:lib": "tsdown --watch"
+    "build:lib": "tsdown -c ./tsdown.lib.ts",
+    "build:userscripts": "tsdown -c ./tsdown.user-scripts.ts",
+    "dev:lib": "tsdown --watch",
+    "dev:userscripts": "tsdown -c ./tsdown.user-scripts.ts --watch",
+    "prepublishOnly": "npm run build"
   },
   "dependencies": {
     "idb": "^8.0.3",
