@@ -134,11 +134,12 @@ export const createActions: StateCreator<
       if (config.notifyOnStart) {
         get().showNotification('开始更新头像...', 'info');
       }
+
       console.log('[updateAvatar] Starting avatar update...');
-      
       await get().updateHandler?.();
+      
       console.log('[updateAvatar] Avatar update completed.');
-      set({ stats: configManager.getState() });
+      configManager.recordSuccess();
 
       // 启用成功时的通知
       if (config.notifyOnSuccess) {
@@ -146,6 +147,7 @@ export const createActions: StateCreator<
       }
     } catch (error) {
       console.error('Update failed:', error);
+      configManager.recordError(error instanceof Error ? error : new Error(String(error)));
       const message = error instanceof Error ? error.message : String(error);
 
       // 启用失败时的通知
@@ -153,6 +155,7 @@ export const createActions: StateCreator<
         get().showNotification(`失败: ${message}`, 'error', 5000);
       }
     } finally {
+      set({ stats: configManager.getState() });
       set((state) => ({ ui: { ...state.ui, isUpdating: false } }));
     }
   },

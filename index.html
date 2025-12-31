@@ -36,12 +36,10 @@
           // 随机记录成功/失败
           if (Math.random() > 0.5) {
             console.log('%cUpdate succeeded!', 'color: blue;');
-            store.getState().configManager.recordSuccess();
           } else {
             console.error('%cUpdate failed!', 'color: red;');
-            store.getState().configManager.recordError(new Error('Random failure'));
+            throw new Error('Simulated update failure');
           }
-          console.log('State:', store.getState());
         });
       }
     });
