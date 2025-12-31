@@ -13,17 +13,24 @@ interface AvatarDB extends DBSchema {
     key: string;
     value: any;
   };
+  'mood-store': {
+    key: string;
+    value: string;
+  };
 }
 
 
 function createDBPromise(dbName: string) {
-  return openDB<AvatarDB>(dbName, 1, {
+  return openDB<AvatarDB>(dbName, 2, {
     upgrade(db) {
       if (!db.objectStoreNames.contains('config-store')) {
         db.createObjectStore('config-store');
       }
       if (!db.objectStoreNames.contains('state-store')) {
         db.createObjectStore('state-store');
+      }
+      if (!db.objectStoreNames.contains('mood-store')) {
+        db.createObjectStore('mood-store');
       }
     },
   });
@@ -118,8 +125,21 @@ export class BrowserConfigManager extends BaseConfigManager<Config, State> {
     const db = await this.dbPromise;
     await db.clear('config-store');
     await db.clear('state-store');
+    await db.clear('mood-store');
     this.config = { ...DEFAULT_CONFIG };
     this.state = this.getDefaultState();
+    return true;
+  }
+
+  async getMoodAvatar(day: string): Promise<string | null> {
+    const db = await this.dbPromise;
+    const avatar = await db.get('mood-store', `day-${day}`);
+    return avatar || null;
+  }
+
+  async saveMoodAvatar(day: string, base64: string): Promise<boolean> {
+    const db = await this.dbPromise;
+    await db.put('mood-store', base64, `day-${day}`);
     return true;
   }
 }

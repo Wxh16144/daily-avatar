@@ -20,6 +20,9 @@ export abstract class BaseConfigManager<
   abstract listStorage(): string[] | Promise<string[]>;
   abstract clearAllData(): boolean | Promise<boolean>;
 
+  abstract getMoodAvatar(day: string): Promise<string | null> | string | null;
+  abstract saveMoodAvatar(day: string, base64: string): Promise<boolean> | boolean;
+
   recordSuccess(): TState | Promise<TState> {
     const now = Date.now();
     const newLog: UpdateLog = { timestamp: now, result: 'success' };

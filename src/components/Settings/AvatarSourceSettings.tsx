@@ -1,4 +1,5 @@
 import { useStore } from '@/store';
+import { WeeklyMoodSettings } from './WeeklyMoodSettings';
 
 export function AvatarSourceSettings() {
   const { config, updateConfig } = useStore();
@@ -19,6 +20,7 @@ export function AvatarSourceSettings() {
           >
             <option value="random">随机头像</option>
             <option value="api">自定义API</option>
+            <option value="weekly-mood">一周心情表</option>
           </select>
         </div>
 
@@ -36,7 +38,12 @@ export function AvatarSourceSettings() {
             />
           </div>
         )}
+
+        {config.avatarSource === 'weekly-mood' && (
+          <WeeklyMoodSettings />
+        )}
       </div>
     </div>
   );
 }
+

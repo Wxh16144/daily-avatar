@@ -27,7 +27,7 @@ export interface Config {
   retryInterval: number;
 
   /** 头像来源 */
-  avatarSource: 'random' | 'api';
+  avatarSource: 'random' | 'api' | 'weekly-mood';
   /** 自定义 API 地址 */
   apiUrl: string;
 }

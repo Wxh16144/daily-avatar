@@ -3,6 +3,8 @@ import type { useStore } from '@/store';
 import type { AppConfig } from '@/types/appConfig';
 
 declare global {
+  const __PKG_VERSION__: string;
+  const __PKG_NAME__: string;
   interface Window {
     daily_avatar_UI: {
       init: (

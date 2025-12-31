@@ -1,8 +1,13 @@
 import { defineConfig } from 'vite';
 import preact from '@preact/preset-vite';
 import tailwindcss from '@tailwindcss/vite';
+import pkg from './package.json';
 
 export default defineConfig({
+  define: {
+    '__PKG_VERSION__': JSON.stringify(pkg.version),
+    '__PKG_NAME__': JSON.stringify(pkg.name),
+  },
   plugins: [
     preact({
       reactAliasesEnabled: false
