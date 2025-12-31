@@ -17,8 +17,6 @@ interface ScriptConfig {
   banner: Record<string, string | string[]>
 }
 
-const isProd = process.env.NODE_ENV !== 'dev';
-
 const scripts: ScriptConfig[] = [
   {
     id: 'v2ex-daily-avatar',

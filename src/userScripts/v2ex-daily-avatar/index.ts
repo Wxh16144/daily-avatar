@@ -1,5 +1,7 @@
-import { AvatarUpdater } from './AvatarUpdater';
 import { APP_META } from '@/constants/meta';
+import { AvatarUpdater } from './AvatarUpdater';
+import ConfigManager from '../Tampermonkey'
+// import { BrowserConfigManager as ConfigManager } from '@/lib/configManager'; 
 
 // 等待 UI 库加载
 const waitForUI = () => {
@@ -20,11 +22,7 @@ const waitForUI = () => {
 async function main() {
   await waitForUI();
 
-  const ConfigManager: any = __IS_PROD__
-    ? await import('../Tampermonkey')
-    : await import('../HybridConfigManager');
-
-  const configManager = new ConfigManager('v2ex-daily-avatar');
+  const configManager = new ConfigManager();
   const updater = new AvatarUpdater(configManager);
 
   // 初始化 UI
