@@ -15,23 +15,31 @@ interface AvatarDB extends DBSchema {
   };
 }
 
-const dbPromise = openDB<AvatarDB>('daily-avatar', 1, {
-  upgrade(db) {
-    if (!db.objectStoreNames.contains('config-store')) {
-      db.createObjectStore('config-store');
-    }
-    if (!db.objectStoreNames.contains('state-store')) {
-      db.createObjectStore('state-store');
-    }
-  },
-});
+
+function createDBPromise(dbName: string) {
+  return openDB<AvatarDB>(dbName, 1, {
+    upgrade(db) {
+      if (!db.objectStoreNames.contains('config-store')) {
+        db.createObjectStore('config-store');
+      }
+      if (!db.objectStoreNames.contains('state-store')) {
+        db.createObjectStore('state-store');
+      }
+    },
+  });
+}
+
 
 export class BrowserConfigManager extends BaseConfigManager<Config, State> {
   config: Config;
   state: State;
+  dbName: string;
+  dbPromise: ReturnType<typeof createDBPromise>;
 
-  constructor() {
+  constructor(dbName = 'daily-avatar') {
     super();
+    this.dbName = dbName;
+    this.dbPromise = createDBPromise(this.dbName);
     // 初始化默认值，避免在异步加载完成前为 undefined
     this.config = { ...DEFAULT_CONFIG };
     this.state = this.getDefaultState();
@@ -42,7 +50,7 @@ export class BrowserConfigManager extends BaseConfigManager<Config, State> {
   }
 
   async loadConfig(): Promise<Config> {
-    const db = await dbPromise;
+    const db = await this.dbPromise;
     const savedConfig = await db.get('config-store', 'avatarConfig');
 
     if (!savedConfig) {
@@ -59,13 +67,13 @@ export class BrowserConfigManager extends BaseConfigManager<Config, State> {
 
   async saveConfig(newConfig: Partial<Config>): Promise<boolean> {
     this.config = { ...this.config, ...newConfig };
-    const db = await dbPromise;
+    const db = await this.dbPromise;
     await db.put('config-store', this.config, 'avatarConfig');
     return true;
   }
 
   async resetConfig(): Promise<boolean> {
-    const db = await dbPromise;
+    const db = await this.dbPromise;
     await db.put('config-store', DEFAULT_CONFIG, 'avatarConfig');
     this.config = { ...DEFAULT_CONFIG };
     return true;
@@ -92,7 +100,7 @@ export class BrowserConfigManager extends BaseConfigManager<Config, State> {
 
   async loadState(): Promise<State> {
     const defaultState = this.getDefaultState();
-    const db = await dbPromise;
+    const db = await this.dbPromise;
     const savedState = await db.get('state-store', 'avatarState');
 
     const state = savedState ? { ...defaultState, ...savedState } : defaultState;
@@ -102,13 +110,13 @@ export class BrowserConfigManager extends BaseConfigManager<Config, State> {
 
   async saveState(newState: Partial<State>): Promise<boolean> {
     this.state = { ...this.state, ...newState };
-    const db = await dbPromise;
+    const db = await this.dbPromise;
     await db.put('state-store', this.state, 'avatarState');
     return true;
   }
 
   async clearAllData(): Promise<boolean> {
-    const db = await dbPromise;
+    const db = await this.dbPromise;
     await db.clear('config-store');
     await db.clear('state-store');
     this.config = { ...DEFAULT_CONFIG };
