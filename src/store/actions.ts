@@ -35,12 +35,12 @@ export const createActions: StateCreator<
     const config = await configManager.loadConfig();
     await configManager.loadState(); // Ensure state is loaded
     const stats = configManager.getState();
-    
+
     const finalAppConfig = { ...DEFAULT_APP_CONFIG, ...appConfig };
 
-    set((state) => ({ 
-      configManager, 
-      config, 
+    set((state) => ({
+      configManager,
+      config,
       stats,
       ui: {
         ...state.ui,
@@ -91,18 +91,20 @@ export const createActions: StateCreator<
   ),
 
   showNotification: (message, type = 'info', duration = 3000) => {
-    const id = Date.now().toString() + Math.random().toString(36).slice(2, 9);
-    set((state) => ({
-      ui: {
-        ...state.ui,
-        notifications: [...state.ui.notifications, { id, type, message, duration }]
-      }
-    }));
+    if (get().config.enableNotifications) {
+      const id = Date.now().toString() + Math.random().toString(36).slice(2, 9);
+      set((state) => ({
+        ui: {
+          ...state.ui,
+          notifications: [...state.ui.notifications, { id, type, message, duration }]
+        }
+      }));
 
-    if (duration > 0) {
-      setTimeout(() => {
-        get().hideNotification(id);
-      }, duration);
+      if (duration > 0) {
+        setTimeout(() => {
+          get().hideNotification(id);
+        }, duration);
+      }
     }
   },
 
@@ -123,20 +125,33 @@ export const createActions: StateCreator<
   },
 
   updateAvatar: async () => {
-    const { configManager, updateHandler } = get();
+    const { configManager, updateHandler, config } = get();
     if (!configManager || !updateHandler) return;
 
     set((state) => ({ ui: { ...state.ui, isUpdating: true } }));
     try {
-      // implement actual update logic if available
+      // 启用开始时的通知
+      if (config.notifyOnStart) {
+        get().showNotification('开始更新头像...', 'info');
+      }
       console.log('[updateAvatar] Starting avatar update...');
+      
       await get().updateHandler?.();
       console.log('[updateAvatar] Avatar update completed.');
       set({ stats: configManager.getState() });
+
+      // 启用成功时的通知
+      if (config.notifyOnSuccess) {
+        get().showNotification('头像更新成功', 'success', 3000);
+      }
     } catch (error) {
       console.error('Update failed:', error);
       const message = error instanceof Error ? error.message : String(error);
-      get().showNotification(`失败: ${message}`, 'error', 5000);
+
+      // 启用失败时的通知
+      if (config.notifyOnFailure) {
+        get().showNotification(`失败: ${message}`, 'error', 5000);
+      }
     } finally {
       set((state) => ({ ui: { ...state.ui, isUpdating: false } }));
     }

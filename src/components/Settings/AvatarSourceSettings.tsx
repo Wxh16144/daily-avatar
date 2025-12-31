@@ -32,7 +32,7 @@ export function AvatarSourceSettings() {
               value={config.apiUrl}
               onChange={(e) => updateConfig('apiUrl', e.currentTarget.value)}
               class="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg focus:border-blue-500 outline-none text-sm"
-              placeholder="https://api.example.com/random-avatar"
+              placeholder="https://api.dicebear.com/9.x/notionists/png"
             />
           </div>
         )}

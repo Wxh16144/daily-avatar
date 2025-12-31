@@ -46,6 +46,7 @@
   "devDependencies": {
     "@preact/preset-vite": "^2.10.2",
     "@tailwindcss/vite": "^4.1.18",
+    "@types/jquery": "^3.5.33",
     "@types/node": "^24.10.1",
     "tailwindcss": "^4.1.18",
     "tsdown": "^0.18.3",

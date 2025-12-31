@@ -1,3 +1,4 @@
+import * as $ from 'jquery/dist/jquery.slim';
 
 declare global {
   // 油猴脚本的GM_* API 声明
@@ -33,6 +34,11 @@ declare global {
   }) => { abort: () => void };
   var GM_registerMenuCommand: (name: string, cmd: () => void, accessKey?: string) => string;
   var GM_unregisterMenuCommand: (id: string) => void;
+
+  // 用于 jQuery
+  interface Window {
+    $: typeof $;
+  }
 }
 
 export { };

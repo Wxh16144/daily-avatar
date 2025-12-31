@@ -21,15 +21,14 @@ export class AvatarUpdater {
     const config = this.configManager.getConfig();
     let url = '';
 
-    switch (config.avatarSource) {
-      case 'api':
-        url = config.apiUrl;
-        break;
-      case 'random':
-      default:
-        // 使用一个默认的随机头像 API，例如 DiceBear
-        url = `https://api.dicebear.com/7.x/avataaars/svg?seed=${Date.now()}`;
-        break;
+    if(config.avatarSource === 'api') {
+      url = config.apiUrl;
+    }else {
+      // https://www.dicebear.com/styles/croodles-neutral/
+      const qs = new URLSearchParams();
+      qs.append('seed', Date.now().toString());
+      qs.append('size', '256');
+      url = `https://api.dicebear.com/9.x/croodles-neutral/png?${qs.toString()}`;
     }
 
     if (!url) throw new Error('未配置头像源');
@@ -47,25 +46,37 @@ export class AvatarUpdater {
 
   async uploadAvatar(blob: Blob) {
     const formData = new FormData();
-    // V2EX 的头像上传字段通常是 'avatar'，需要根据实际情况调整
-    // 这里假设是标准的表单上传
-    // 注意：V2EX 可能需要 CSRF token，通常在页面中可以找到
-    // 假设脚本运行在 V2EX 页面上，我们可以尝试获取
-
-    // 模拟上传过程，因为实际 V2EX 上传接口需要抓包确认
-    // 这里我们假设有一个 /settings/avatar 接口
     formData.append('avatar', blob, 'avatar.png');
 
-    // 获取 CSRF Token (V2EX 特有)
-    // const once = document.querySelector('input[name="once"]')?.value;
-    // if (once) formData.append('once', once);
+    const once = await this.fetchOnceToken();
 
-    // 实际上传逻辑
-    // return await this.uploadWithFetch(formData);
+    if (!once) throw new Error('未能获取 once，可能未登录或页面结构变更');
+    formData.append('once', once);
 
-    // 模拟成功
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    return { success: true };
+    return await this.uploadWithFetch(formData);
+  }
+
+  /**
+   * 请求用户设置页面并解析 once
+   */
+  fetchOnceToken(): Promise<string | null> {
+    return new Promise((resolve) => {
+      GM_xmlhttpRequest({
+        method: 'GET',
+        url: 'https://www.v2ex.com/settings',
+        onload: (response) => {
+          if (response.status === 200 && response.responseText) {
+            const html = response.responseText;
+            const dom = $(html);
+            const once = dom.find('input[name="once"]').val();
+            resolve(once ? String(once) : null);
+          } else {
+            resolve(null);
+          }
+        },
+        onerror: () => resolve(null)
+      });
+    });
   }
 
   async uploadWithFetch(formData: FormData) {
@@ -78,7 +89,11 @@ export class AvatarUpdater {
     if (!response.ok) {
       throw new Error(`上传失败: ${response.status}`);
     }
-    return await response.json(); // 或者 response.text()
+    const html = await response.text();
+    if (html.includes('新头像设置成功')) {
+      return { success: true };
+    }
+    throw new Error('可能上传失败，未检测到“新头像设置成功”提示');
   }
 
   fetchWithGM(url: string): Promise<Blob> {

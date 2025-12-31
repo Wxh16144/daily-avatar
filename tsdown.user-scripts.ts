@@ -42,12 +42,18 @@ const scripts: ScriptConfig[] = [
         'GM_unregisterMenuCommand',
       ],
       connect: [
+        'unpkg.com',
         'source.unsplash.com',
         'api.dicebear.com',
         '*',
       ],
       // require: `https://unpkg.com/@wuxh/daily-avatar@${pkg.version}`,
-      require: 'http://127.0.0.1:7783/dist/index.js',
+      require: [
+        'https://unpkg.com/jquery@3.3.1/dist/jquery.slim.min.js',
+        'https://registry.npmmirror.com/idb/8.0.3/files/build/umd.js',
+        `https://unpkg.com/@wuxh/daily-avatar@${pkg.version}`,
+        'http://127.0.0.1:7783/dist/index.js'
+      ],
       ...sharedBanner,
       'run-at': 'document-idle',
       noframes: '',
