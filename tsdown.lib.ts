@@ -2,7 +2,7 @@ import { defineConfig } from 'tsdown'
 
 export default defineConfig([
   {
-    entry: "src/lib/configManager/Browser.ts",
+    entry: "src/lib/configManager/index.ts",
     dts: false,
     outputOptions: {
       format: "umd",
@@ -21,7 +21,7 @@ export default defineConfig([
   },
   {
     entry: {
-      'configManager': "src/lib/configManager/Browser.ts"
+      'configManager': "src/lib/configManager/index.ts"
     },
     dts: { build: true },
     outputOptions: {

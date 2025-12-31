@@ -1,4 +1,4 @@
-import type { BaseConfigManager } from '@/lib/configManager/Base';
+import type { BaseConfigManager } from '@/lib/configManager';
 import type { Config } from '@/types/config';
 import type { State, UpdateLog } from '@/types/state';
 import { DEFAULT_APP_CONFIG } from '@/constants/appConfig';

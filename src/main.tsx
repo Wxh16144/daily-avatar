@@ -1,5 +1,5 @@
 import { h, render } from 'preact'
-import type { BaseConfigManager } from '@/lib/configManager/Base.ts';
+import type { BaseConfigManager } from '@/lib/configManager';
 import type { AppConfig } from '@/types/appConfig';
 import styles from './index.css?inline'
 import { App } from './app.tsx'

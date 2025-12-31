@@ -2,7 +2,7 @@
 import type { StateCreator } from 'zustand/vanilla';
 import type { AppStore } from '.';
 import type { Config } from '@/types/config';
-import type { BaseConfigManager } from '@/lib/configManager/Base';
+import type { BaseConfigManager } from '@/lib/configManager';
 import type { NotificationType } from './initialState';
 import type { AppConfig } from '@/types/appConfig';
 import { DEFAULT_APP_CONFIG } from '@/constants/appConfig';

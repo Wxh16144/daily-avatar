@@ -27,7 +27,7 @@
     "build:ui": "vite build",
     "build:lib": "tsdown -c ./tsdown.lib.ts",
     "build:userscripts": "tsdown -c ./tsdown.user-scripts.ts",
-    "dev:lib": "tsdown --watch",
+    "dev:lib": "tsdown --watch -c ./tsdown.lib.ts",
     "dev:userscripts": "tsdown -c ./tsdown.user-scripts.ts --watch",
     "prepublishOnly": "npm run build"
   },

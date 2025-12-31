@@ -29,7 +29,6 @@ function createDBPromise(dbName: string) {
   });
 }
 
-
 export class BrowserConfigManager extends BaseConfigManager<Config, State> {
   config: Config;
   state: State;

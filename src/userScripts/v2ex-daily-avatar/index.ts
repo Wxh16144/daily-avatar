@@ -1,4 +1,4 @@
-import { TampermonkeyConfigManager } from '../Tampermonkey';
+import { ConfigManager } from '../HybridConfigManager';
 import { AvatarUpdater } from './AvatarUpdater';
 import { APP_META } from '@/constants/meta';
 
@@ -21,12 +21,12 @@ const waitForUI = () => {
 async function main() {
   await waitForUI();
 
-  const configManager = new TampermonkeyConfigManager();
+  const configManager = new ConfigManager('v2ex-daily-avatar');
   const updater = new AvatarUpdater(configManager);
 
   // 初始化 UI
   const { init, store } = window.daily_avatar_UI;
-  init(configManager, 'daily-avatar-ui', {
+  init(configManager, {
     title: 'V2EX Daily Avatar'
   });
 

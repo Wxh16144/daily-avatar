@@ -1,8 +1,12 @@
 import type { Config } from '@/types/config';
 import type { State, UpdateLog } from '@/types/state';
+import type { IConfigStorage } from './IConfigStorage';
 
 // 通用配置管理基类
-export abstract class BaseConfigManager<TConfig extends Config = Config, TState extends State = State> {
+export abstract class BaseConfigManager<
+  TConfig extends Config = Config,
+  TState extends State = State>
+  implements IConfigStorage<TConfig, TState> {
   abstract config: TConfig;
   abstract state: TState;
 
@@ -13,7 +17,6 @@ export abstract class BaseConfigManager<TConfig extends Config = Config, TState 
 
   abstract loadState(): TState | Promise<TState>;
   abstract saveState(newState: Partial<TState>): boolean | Promise<boolean>;
-  protected abstract getDefaultState(): TState;
   abstract listStorage(): string[] | Promise<string[]>;
   abstract clearAllData(): boolean | Promise<boolean>;
 

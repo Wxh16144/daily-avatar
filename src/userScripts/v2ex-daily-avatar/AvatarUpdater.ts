@@ -1,9 +1,9 @@
-import { TampermonkeyConfigManager } from '../Tampermonkey';
+import { ConfigManager } from '../HybridConfigManager';
 
 export class AvatarUpdater {
-  configManager: TampermonkeyConfigManager;
+  configManager: ConfigManager;
 
-  constructor(configManager: TampermonkeyConfigManager) {
+  constructor(configManager: ConfigManager) {
     this.configManager = configManager;
   }
 
