@@ -45,18 +45,6 @@ export function BasicSettings() {
             </div>
           </div>
         </div>
-
-        <label class="block p-3 rounded-xl bg-gray-50/50 border border-gray-100 cursor-pointer hover:bg-gray-50">
-          <span class="block text-sm font-medium text-gray-700 mb-2">
-            每天更新时间
-          </span>
-          <input
-            type="time"
-            value={config.updateTime}
-            onChange={(e) => updateConfig('updateTime', e.currentTarget.value)}
-            class="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg focus:border-blue-500 outline-none text-sm cursor-pointer"
-          />
-        </label>
       </div>
     </div>
   );

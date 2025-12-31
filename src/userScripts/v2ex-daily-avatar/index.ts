@@ -38,10 +38,12 @@ async function main() {
   // 注册菜单命令
   try {
     GM_registerMenuCommand('⚙️ 打开设置', () => {
+      store.getState().togglePanel(false);
       store.getState().toggleSettings(true);
     });
 
     GM_registerMenuCommand('📊 查看状态', () => {
+      store.getState().toggleSettings(false);
       store.getState().togglePanel(true);
     });
 

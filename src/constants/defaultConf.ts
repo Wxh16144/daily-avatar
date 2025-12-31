@@ -8,7 +8,6 @@ export const DEFAULT_CONFIG: Config = {
 
   // 时间设置
   updateInterval: 24 * 60 * 60 * 1000, // 24小时
-  updateTime: '09:00', // 每天更新时间
   checkOnLoad: true, // 页面加载时检查
 
   // 通知设置

@@ -7,7 +7,7 @@ export interface Config {
   /** 更新间隔，单位毫秒 */
   updateInterval: number;
   /** 每天更新时间，格式为 HH:mm */
-  updateTime: string;
+
   /** 页面加载时是否检查更新 */
   checkOnLoad: boolean;
   /** 是否启用通知 */
