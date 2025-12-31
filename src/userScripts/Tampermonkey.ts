@@ -1,5 +1,5 @@
 import { DEFAULT_CONFIG } from '@/constants/defaultConf';
-import { BaseConfigManager } from '@/lib/configManager/Base';
+import { BaseConfigManager } from '@/lib/configManager';
 import { defaultState } from '@/constants/defaultState';
 import type { Config } from "@/types/config";
 import type { State } from "@/types/state";
@@ -74,3 +74,5 @@ export class TampermonkeyConfigManager extends BaseConfigManager<Config, State> 
     };
   }
 }
+
+export default TampermonkeyConfigManager;

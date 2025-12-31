@@ -1,4 +1,3 @@
-import { ConfigManager } from '../HybridConfigManager';
 import { AvatarUpdater } from './AvatarUpdater';
 import { APP_META } from '@/constants/meta';
 
@@ -20,6 +19,10 @@ const waitForUI = () => {
 
 async function main() {
   await waitForUI();
+
+  const ConfigManager: any = __IS_PROD__
+    ? await import('../Tampermonkey')
+    : await import('../HybridConfigManager');
 
   const configManager = new ConfigManager('v2ex-daily-avatar');
   const updater = new AvatarUpdater(configManager);

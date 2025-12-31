@@ -1,9 +1,11 @@
-import { ConfigManager } from '../HybridConfigManager';
+import type { IConfigStorage } from '@/lib/configManager';
+import type { State } from '@/types/state';
+import type { Config } from '@/types/config';
 
 export class AvatarUpdater {
-  configManager: ConfigManager;
+  configManager: IConfigStorage<Config, State>;
 
-  constructor(configManager: ConfigManager) {
+  constructor(configManager: IConfigStorage<Config, State>) {
     this.configManager = configManager;
   }
 
@@ -21,9 +23,9 @@ export class AvatarUpdater {
     const config = this.configManager.getConfig();
     let url = '';
 
-    if(config.avatarSource === 'api') {
+    if (config.avatarSource === 'api') {
       url = config.apiUrl;
-    }else {
+    } else {
       // https://www.dicebear.com/styles/croodles-neutral/
       const qs = new URLSearchParams();
       qs.append('seed', Date.now().toString());

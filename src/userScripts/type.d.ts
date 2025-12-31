@@ -39,6 +39,10 @@ declare global {
   interface Window {
     $: typeof $;
   }
+
+  // 用于脚本注入
+  /** 生产 */
+  const __IS_PROD__: boolean;
 }
 
 export { };

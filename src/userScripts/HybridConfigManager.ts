@@ -5,7 +5,7 @@ import type { State } from '@/types/state';
 import { type IConfigStorage, BrowserConfigManager } from '@/lib/configManager';
 import { TampermonkeyConfigManager } from './Tampermonkey';
 
-export class ConfigManager implements IConfigStorage<Config, State> {
+export class HybridConfigManager implements IConfigStorage<Config, State> {
   browser: BrowserConfigManager;
   tampermonkey: TampermonkeyConfigManager;
   primary: 'browser' | 'tampermonkey';
@@ -102,3 +102,5 @@ export class ConfigManager implements IConfigStorage<Config, State> {
     return this.main.hasUpdatedToday();
   }
 }
+
+export default HybridConfigManager;

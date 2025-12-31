@@ -17,6 +17,8 @@ interface ScriptConfig {
   banner: Record<string, string | string[]>
 }
 
+const isProd = process.env.NODE_ENV !== 'dev';
+
 const scripts: ScriptConfig[] = [
   {
     id: 'v2ex-daily-avatar',
@@ -31,7 +33,6 @@ const scripts: ScriptConfig[] = [
         '*://v2ex.com/*',
         '*://www.v2ex.com/*',
       ],
-      include: '*',
       grant: [
         'unsafeWindow',
         'GM_xmlhttpRequest',
@@ -47,12 +48,10 @@ const scripts: ScriptConfig[] = [
         'api.dicebear.com',
         '*',
       ],
-      // require: `https://unpkg.com/@wuxh/daily-avatar@${pkg.version}`,
       require: [
         'https://unpkg.com/jquery@3.3.1/dist/jquery.slim.min.js',
-        'https://registry.npmmirror.com/idb/8.0.3/files/build/umd.js',
+        'https://unpkg.com/idb@8.0.3/build/umd.js',
         `https://unpkg.com/@wuxh/daily-avatar@${pkg.version}`,
-        'http://127.0.0.1:7783/dist/index.js'
       ],
       ...sharedBanner,
       'run-at': 'document-idle',
