@@ -58,6 +58,11 @@ export class TampermonkeyConfigManager extends BaseConfigManager<Config, State> 
   clearAllData(): boolean {
     GM_deleteValue('avatarConfig');
     GM_deleteValue('avatarState');
+    // Clear mood avatars
+    const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+    for (const day of days) {
+      GM_deleteValue(`moodAvatar_${day}`);
+    }
     this.config = { ...DEFAULT_CONFIG };
     this.state = this.loadState();
     return true;
@@ -72,6 +77,15 @@ export class TampermonkeyConfigManager extends BaseConfigManager<Config, State> 
       nextScheduledUpdate: 0,
       history: [],
     };
+  }
+
+  getMoodAvatar(day: string): string | null {
+    return GM_getValue(`moodAvatar_${day}`, null);
+  }
+
+  saveMoodAvatar(day: string, base64: string): boolean {
+    GM_setValue(`moodAvatar_${day}`, base64);
+    return true;
   }
 }
 

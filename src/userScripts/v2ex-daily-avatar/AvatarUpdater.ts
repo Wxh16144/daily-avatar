@@ -19,11 +19,33 @@ export class AvatarUpdater {
     }
   }
 
+  base64ToBlob(base64: string) {
+    const arr = base64.split(',');
+    const mime = arr[0].match(/:(.*?);/)?.[1];
+    const bstr = atob(arr[1]);
+    let n = bstr.length;
+    const u8arr = new Uint8Array(n);
+    while (n--) {
+      u8arr[n] = bstr.charCodeAt(n);
+    }
+    return new Blob([u8arr], { type: mime });
+  }
+
   async fetchAvatarImage() {
     const config = this.configManager.getConfig();
     let url = '';
 
-    if (config.avatarSource === 'api') {
+    if (config.avatarSource === 'weekly-mood') {
+      const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+      const dayName = days[new Date().getDay()];
+      const moodAvatar = await this.configManager.getMoodAvatar(dayName);
+      if (moodAvatar) {
+        return this.base64ToBlob(moodAvatar);
+      }
+      // Fallback if no custom avatar set
+      // Using a consistent seed for the day
+      url = `https://api.dicebear.com/9.x/initials/png?seed=${dayName}&size=256`;
+    } else if (config.avatarSource === 'api') {
       url = config.apiUrl;
     } else {
       // https://www.dicebear.com/styles/croodles-neutral/
