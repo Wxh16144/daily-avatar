@@ -51,15 +51,30 @@ export function WeeklyMoodSettings() {
   const applyTemplate = async (template: MoodTemplate) => {
     if (!configManager) return;
     setApplyingTemplate(template.id);
+    let fallbackCount = 0;
+
     try {
       const promises = WEEK_DAYS.map(async (day) => {
         // 默认 template 都是 英文+ 小写的 jpg 结尾
-        const url = `${ASSETS_BASE_URL}${template.path}/${day.key}.jpg`;
-        const response = await fetch(url);
-        if (!response.ok) {
-          throw new Error(`Failed to load ${day.key} from template`);
+        const fileExt = template.id === 'default' ? 'svg' : 'jpg';
+        const url = `${ASSETS_BASE_URL}${template.path}/${day.key}.${fileExt}`;
+        try {
+          const response = await fetch(url);
+          if (!response.ok) {
+            throw new Error(`Failed to load ${day.key} from template`);
+          }
+          return { key: day.key, blob: await response.blob() };
+        } catch (error) {
+          console.warn(`Failed to load template image for ${day.key}, trying fallback...`, error);
+          fallbackCount++;
+          // 兜底：请求 public/mood-avatars 不带 template 的模版
+          const fallbackUrl = `${ASSETS_BASE_URL}/mood-avatars/${day.key}.svg`;
+          const response = await fetch(fallbackUrl);
+          if (!response.ok) {
+            throw new Error(`Failed to load fallback ${day.key}`);
+          }
+          return { key: day.key, blob: await response.blob() };
         }
-        return { key: day.key, blob: await response.blob() };
       });
 
       const results = await Promise.all(promises);
@@ -78,7 +93,12 @@ export function WeeklyMoodSettings() {
           reader.readAsDataURL(blob);
         });
       }
-      showNotification(`已应用模版：${template.name}`, 'success');
+      
+      if (fallbackCount > 0) {
+        showNotification(`已应用模版：${template.name} (部分使用默认图标兜底)`, 'warning');
+      } else {
+        showNotification(`已应用模版：${template.name}`, 'success');
+      }
     } catch (error) {
       console.error('Failed to apply template:', error);
       showNotification('应用模版失败，请检查网络或文件', 'error');

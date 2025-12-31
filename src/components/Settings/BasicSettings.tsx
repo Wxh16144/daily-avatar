@@ -32,17 +32,21 @@ export function BasicSettings() {
               type="range"
               min="1"
               max="168"
+              disabled={config.avatarSource === 'weekly-mood'}
               value={config.updateInterval / (60 * 60 * 1000)}
               onChange={(e) => updateConfig('updateInterval', parseInt(e.currentTarget.value) * 60 * 60 * 1000)}
-              class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
+              class={`w-full h-2 rounded-lg appearance-none cursor-pointer accent-blue-600 ${config.avatarSource === 'weekly-mood' ? 'bg-gray-100 cursor-not-allowed' : 'bg-gray-200'}`}
             />
             <div class="flex justify-between text-xs text-gray-500 font-medium">
               <span>1小时</span>
               <span class="text-blue-600">
-                {formatDuration(config.updateInterval)}
+                {config.avatarSource === 'weekly-mood' ? '每天 (固定)' : formatDuration(config.updateInterval)}
               </span>
               <span>7天</span>
             </div>
+            {config.avatarSource === 'weekly-mood' && (
+              <p class="text-xs text-gray-400">一周心情表模式下，更新频率固定为每天一次</p>
+            )}
           </div>
         </div>
       </div>

@@ -15,7 +15,13 @@ export function AvatarSourceSettings() {
           </label>
           <select
             value={config.avatarSource}
-            onChange={(e) => updateConfig('avatarSource', e.currentTarget.value)}
+            onChange={(e) => {
+              const source = e.currentTarget.value;
+              updateConfig('avatarSource', source);
+              if (source === 'weekly-mood') {
+                updateConfig('updateInterval', 24 * 60 * 60 * 1000);
+              }
+            }}
             class="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg focus:border-blue-500 outline-none text-sm appearance-none"
           >
             <option value="random">随机头像</option>

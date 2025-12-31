@@ -7,6 +7,14 @@ export interface MoodTemplate {
 }
 
 export const MOOD_TEMPLATES: MoodTemplate[] = [
+  // 默认模板
+  {
+    id: 'default',
+    path: '/mood-avatars',
+    name: '默认风格',
+    description: '默认的心情头像风格',
+    copyright: '作者自制'
+  },
   {
     id: 'notion-style',
     path: '/mood-avatars/templates/cat-style',
