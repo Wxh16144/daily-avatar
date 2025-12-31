@@ -1,6 +1,6 @@
 export function formatDuration(ms: number, compact = false): string {
   if (typeof ms !== 'number' || isNaN(ms) || ms < 0) {
-    return compact ? '0m' : '0分钟';
+    return compact ? '0s' : '0秒';
   }
 
   const seconds = Math.floor(ms / 1000);
@@ -11,7 +11,8 @@ export function formatDuration(ms: number, compact = false): string {
   if (compact) {
     if (days > 0) return `${days}d ${hours % 24}h`;
     if (hours > 0) return `${hours}h ${minutes % 60}m`;
-    return `${minutes}m`;
+    if (minutes > 0) return `${minutes}m ${seconds % 60}s`;
+    return `${seconds}s`;
   }
 
   if (days > 0) {
@@ -22,7 +23,11 @@ export function formatDuration(ms: number, compact = false): string {
     const m = minutes % 60;
     return m > 0 ? `${hours}小时${m}分钟` : `${hours}小时`;
   }
-  return `${minutes}分钟`;
+  if (minutes > 0) {
+    const s = seconds % 60;
+    return s > 0 ? `${minutes}分钟${s}秒` : `${minutes}分钟`;
+  }
+  return `${seconds}秒`;
 }
 
 export function formatTime(timestamp: number): string {

@@ -22,6 +22,7 @@ export function StatusList() {
         </span>
       </div>
 
+      {/* 上次结果 */}
       {stats.lastResult && (
         <div class={`p-3 rounded-lg border ${
           stats.lastResult === 'success'
@@ -44,13 +45,15 @@ export function StatusList() {
             </span>
           </div>
           <div class="flex justify-between items-center mt-1">
-             <span class="text-xs text-gray-400">{formatTime(stats.lastUpdate)}</span>
+            <span class="text-xs text-gray-400">{formatTime(stats.lastUpdate)}</span>
           </div>
           {stats.lastErrorMessage && (
             <p class="text-xs text-red-600 mt-2 leading-relaxed" style={{ color: '#dc2626' }}>{stats.lastErrorMessage}</p>
           )}
         </div>
       )}
+
+
     </div>
   );
 }

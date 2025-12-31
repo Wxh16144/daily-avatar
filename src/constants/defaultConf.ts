@@ -17,6 +17,6 @@ export const DEFAULT_CONFIG: Config = {
   notifyOnStart: false,
 
   // 源设置
-  avatarSource: 'api' as const,
+  avatarSource: 'random',
   apiUrl: '',
 };

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'preact/hooks';
 import { useStore } from '@/store';
-import { formatDuration } from '@/utils/format';
+import { formatDuration, formatTime } from '@/utils/format';
 
 export function ProgressBar() {
   const { config, stats } = useStore();
@@ -28,8 +28,12 @@ export function ProgressBar() {
       </div>
       <div class="w-full bg-white/80 rounded-full h-2 overflow-hidden shadow-inner" style={{ boxShadow: 'inset 0 2px 4px 0 rgb(0 0 0 / 0.05)' }}>
         <div
-          class="bg-gradient-to-r from-blue-500 to-indigo-500 h-full rounded-full transition-all duration-500 ease-out"
-          style={{ width: `${progress}%`, background: 'linear-gradient(to right, #3b82f6, #6366f1)' }}
+          class="bg-gradient-to-r from-blue-500 to-indigo-500 h-full rounded-full"
+          style={{
+            width: `${progress}%`,
+            background: 'linear-gradient(to right, #3b82f6, #6366f1)',
+            transition: 'width 1s cubic-bezier(0.4, 0, 0.2, 1)'
+          }}
         ></div>
       </div>
     </div>

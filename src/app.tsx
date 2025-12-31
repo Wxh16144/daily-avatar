@@ -4,6 +4,7 @@ import { Settings } from '@/components/Settings';
 import { DataRefresher } from '@/components/DataRefresher';
 import { AvatarTrigger } from '@/components/Trigger/AvatarTrigger';
 import { NotificationList } from '@/components/Notification';
+import { AvatarAutoUpdater } from './components/AvatarAutoUpdater';
 
 export function App() {
   const { ui: { showSettings, showPanel } } = useStore();
@@ -18,6 +19,7 @@ export function App() {
   return (
     <>
       <DataRefresher />
+      <AvatarAutoUpdater />
       <NotificationList />
       {render()}
     </>

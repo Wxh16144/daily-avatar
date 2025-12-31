@@ -51,6 +51,7 @@ export abstract class BaseConfigManager<
       lastResult: 'failure' as const,
       lastErrorMessage: error.message || 'Unknown error',
       isUpdating: false,
+      nextScheduledUpdate: now + this.config.updateInterval,
       history,
     } as Partial<TState>;
 

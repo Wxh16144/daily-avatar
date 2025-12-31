@@ -6,8 +6,7 @@ export function AvatarTrigger() {
   return (
     <button
       onClick={() => togglePanel(true)}
-      disabled={isUpdating}
-      class={`bg-blue-500 hover:bg-blue-600 text-white rounded-full p-3 shadow-lg transition duration-200 fixed bottom-4 right-4 z-50 ${isUpdating ? 'opacity-60 cursor-not-allowed' : ''}`}
+      class={`bg-blue-500 hover:bg-blue-600 text-white rounded-full p-3 shadow-lg transition duration-200 fixed bottom-4 right-4 z-50`}
       aria-busy={isUpdating}
       aria-label={isUpdating ? '正在更新' : '立即更新'}
     >
