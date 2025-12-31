@@ -1,15 +1,6 @@
 # Daily Avatar UI
 
-这是一个自动更换头像脚本设计的 UI 界面库。它提供了一套现代化的、样式隔离的配置面板和状态监控组件。
-
-> **⚠️ 注意**：本项目仅包含 UI 界面、配置管理和状态流转逻辑。实际的头像获取（Fetch）与上传（Upload）功能需要在宿主脚本（如 Tampermonkey 脚本）中实现并注册到此 UI 中。
-
-## ✨ 特性
-
-- **🛡️ 样式隔离**：采用 Shadow DOM 技术封装，确保 UI 样式（Tailwind CSS）完全独立，既不污染宿主网页，也不受宿主网页样式干扰。
-- **🎨 现代化界面**：基于 Preact + Tailwind CSS v4 构建，提供简洁、美观的配置面板和状态悬浮窗。
-- **⚙️ 完整配置**：内置设置面板，支持调节更新频率、切换头像来源（Unsplash/自定义API/随机）、管理通知偏好。
-- **📊 状态监控**：实时展示更新成功率、历史记录、下次更新倒计时等统计信息。
+这是一个自动更换头像脚本设计的 UI 界面库。它提供了配置面板和状态监控组件。
 
 ## 🚀 集成指南
 
@@ -20,7 +11,7 @@
 在你的 UserScript Metadata 中引入构建好的 IIFE 资源文件：
 
 ```javascript
-// @require TODO: 替换为实际的 UI 库 URL
+// @require https://unpkg.com/@wuxh/daily-avatar@<version>
 ```
 
 ### 2. 初始化与注册
@@ -75,40 +66,6 @@ UI 库加载后会在全局暴露 `window.daily_avatar_UI` 对象。你需要初
     main();
 })();
 ```
-
-## 🛠️ 本地开发
-
-### 安装依赖
-
-```bash
-pnpm install
-```
-
-### 启动开发服务器
-
-```bash
-pnpm dev
-```
-
-这将启动 Vite 服务器，你可以在浏览器中预览 UI 组件。
-
-### 构建
-
-```bash
-pnpm build
-```
-
-构建产物将输出到 `dist/` 目录：
-*   `index.iife.js`: 包含完整 UI 和样式的 IIFE 包，适合 UserScript 引用。
-*   `index.js`: ESM 格式包。
-
-## 🏗️ 技术栈
-
-*   **UI 框架**: [Preact](https://preactjs.com/) (轻量级 React 替代方案)
-*   **状态管理**: [Zustand](https://github.com/pmndrs/zustand) (Vanilla store + Custom hooks)
-*   **样式引擎**: [Tailwind CSS v4](https://tailwindcss.com/)
-*   **构建工具**: [Vite](https://vitejs.dev/) & [tsdown](https://github.com/sxzz/tsdown)
-*   **隔离方案**: Native Shadow DOM
 
 ## 📄 License
 
