@@ -21,7 +21,7 @@ export function init(
   if (!container) {
     container = document.createElement('div');
     container.setAttribute('id', mountPointId);
-    container.setAttribute('data-source', 'https://github.com');
+    container.setAttribute('data-source', 'https://github.com/Wxh16144/daily-avatar');
     // 设置宿主元素样式，确保它不会影响页面布局，但允许内部 fixed 元素显示
     container.style.position = 'absolute';
     container.style.top = '0';

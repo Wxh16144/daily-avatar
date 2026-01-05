@@ -41,7 +41,7 @@ export function HistoryList() {
                   }`}>
                     {log.result === 'success' ? '更新成功' : '更新失败'}
                   </span>
-                  <span class="text-gray-400 text-[10px]">{formatTime(log.timestamp)}</span>
+                  <span class="text-gray-400 text-[10px]">{formatTime(log.timestamp, true)}</span>
                 </div>
                 {log.message && (
                   <p class="text-gray-500 mt-0.5 truncate" title={log.message}>

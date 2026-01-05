@@ -30,14 +30,23 @@ export function formatDuration(ms: number, compact = false): string {
   return `${seconds}秒`;
 }
 
-export function formatTime(timestamp: number): string {
+export function formatTime(timestamp: number, withDate = false): string {
   if (!timestamp || isNaN(timestamp) || timestamp <= 0) {
     return '从未';
   }
-  return new Date(timestamp).toLocaleTimeString('zh-CN', {
+  const date = new Date(timestamp);
+  const now = new Date();
+  const isToday = date.toDateString() === now.toDateString();
+
+  const timeStr = date.toLocaleTimeString('zh-CN', {
     hour: '2-digit',
     minute: '2-digit'
   });
+
+  if (withDate || !isToday) {
+    return `${date.toLocaleDateString('zh-CN')} ${timeStr}`;
+  }
+  return timeStr;
 }
 
 export function formatDate(timestamp: number): string {
