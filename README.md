@@ -98,4 +98,4 @@ interface AppConfig {
 
 ## 📄 License
 
-MIT
+[MIT License](./LICENSE)
