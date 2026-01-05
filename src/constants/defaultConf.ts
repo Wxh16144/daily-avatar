@@ -19,4 +19,5 @@ export const DEFAULT_CONFIG: Config = {
   // 源设置
   avatarSource: 'random',
   apiUrl: '',
+  apiQueryParams: [],
 };

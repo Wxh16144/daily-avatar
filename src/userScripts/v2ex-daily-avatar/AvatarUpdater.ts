@@ -1,11 +1,11 @@
-import type { IConfigStorage } from '@/lib/configManager';
+import type { BaseConfigManager } from '@/lib/configManager';
 import type { State } from '@/types/state';
 import type { Config } from '@/types/config';
 
 export class AvatarUpdater {
-  configManager: IConfigStorage<Config, State>;
+  configManager: BaseConfigManager<Config, State>;
 
-  constructor(configManager: IConfigStorage<Config, State>) {
+  constructor(configManager: BaseConfigManager<Config, State>) {
     this.configManager = configManager;
   }
 
@@ -46,7 +46,7 @@ export class AvatarUpdater {
       // Using a consistent seed for the day
       url = `https://api.dicebear.com/9.x/initials/png?seed=${dayName}&size=256`;
     } else if (config.avatarSource === 'api') {
-      url = config.apiUrl;
+      url = this.configManager.getResolver().getFinalApiUrl();
     } else {
       // https://www.dicebear.com/styles/croodles-neutral/
       const qs = new URLSearchParams();

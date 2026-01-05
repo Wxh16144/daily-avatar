@@ -15,7 +15,12 @@
     "./configManager": {
       "import": "./dist/configManager.mjs",
       "types": "./dist/configManager.d.mts",
-      "browser": "./dist/configManager.umd.js"
+      "default": "./dist/configManager.umd.js"
+    },
+    "./configResolver": {
+      "import": "./dist/configResolver.mjs",
+      "types": "./dist/configResolver.d.mts",
+      "default": "./dist/configResolver.umd.js"
     },
     "./userscripts/*": {
       "default": "./userscripts/*.user.js"

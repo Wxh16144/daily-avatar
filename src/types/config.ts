@@ -30,4 +30,6 @@ export interface Config {
   avatarSource: 'random' | 'api' | 'weekly-mood';
   /** 自定义 API 地址 */
   apiUrl: string;
+  /** API 额外 Query 参数（键值对数组） */
+  apiQueryParams?: Array<{ key: string; value: string }>;
 }

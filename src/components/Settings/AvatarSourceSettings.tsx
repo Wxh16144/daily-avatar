@@ -1,5 +1,7 @@
+
 import { useStore } from '@/store';
 import { WeeklyMoodSettings } from './WeeklyMoodSettings';
+import { ApiQueryParamsEditor } from './ApiQueryParamsEditor';
 
 export function AvatarSourceSettings() {
   const { config, updateConfig } = useStore();
@@ -31,17 +33,25 @@ export function AvatarSourceSettings() {
         </div>
 
         {config.avatarSource === 'api' && (
-          <div class="p-3 rounded-xl bg-gray-50/50 border border-gray-100">
-            <label class="block text-sm font-medium text-gray-700 mb-2">
-              API地址
-            </label>
-            <input
-              type="text"
-              value={config.apiUrl}
-              onChange={(e) => updateConfig('apiUrl', e.currentTarget.value)}
-              class="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg focus:border-blue-500 outline-none text-sm"
-              placeholder="https://api.dicebear.com/9.x/notionists/png"
-            />
+          <div class="p-3 rounded-xl bg-gray-50/50 border border-gray-100 space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                API地址
+              </label>
+              <input
+                type="text"
+                value={config.apiUrl}
+                onChange={(e) => updateConfig('apiUrl', e.currentTarget.value)}
+                class="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg focus:border-blue-500 outline-none text-sm"
+                placeholder="https://api.dicebear.com/9.x/notionists/png"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                API Query
+              </label>
+              <ApiQueryParamsEditor />
+            </div>
           </div>
         )}
 

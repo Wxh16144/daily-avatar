@@ -1,6 +1,7 @@
 import type { Config } from '@/types/config';
 import type { State, UpdateLog } from '@/types/state';
 import type { IConfigStorage } from './IConfigStorage';
+import { ConfigResolver } from '@/lib/configResolver';
 
 // 通用配置管理基类
 export abstract class BaseConfigManager<
@@ -22,6 +23,10 @@ export abstract class BaseConfigManager<
 
   abstract getMoodAvatar(day: string): Promise<string | null> | string | null;
   abstract saveMoodAvatar(day: string, base64: string): Promise<boolean> | boolean;
+
+  getResolver(): ConfigResolver {
+    return new ConfigResolver(this.config);
+  }
 
   recordSuccess(): TState | Promise<TState> {
     const now = Date.now();

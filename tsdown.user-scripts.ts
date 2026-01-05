@@ -12,7 +12,7 @@ const sharedBanner = {
   license: 'MIT',
 }
 
-const shardDefine = {
+const sharedDefine = {
   '__PKG_VERSION__': JSON.stringify(pkg.version),
   '__PKG_NAME__': JSON.stringify(pkg.name),
   'import.meta.env': JSON.stringify({}),
@@ -80,7 +80,7 @@ export default defineConfig(
         ...script.banner,
         ...sharedBanner,
       }),
-      define: shardDefine,
+      define: sharedDefine,
     }
   }),
 )
