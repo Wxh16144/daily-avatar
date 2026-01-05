@@ -67,6 +67,35 @@ UI 库加载后会在全局暴露 `window.daily_avatar_UI` 对象。你需要初
 })();
 ```
 
+## ⚙️ Configuration (AppConfig)
+
+`init` 函数的第二个参数接受一个 `AppConfig` 对象，用于配置 UI 的基本行为。
+
+定义文件: [src/types/appConfig.ts](./src/types/appConfig.ts)
+
+```typescript
+interface AppConfig {
+  /**
+   * UI 面板的标题
+   * @default 'Daily Avatar'
+   */
+  title: string;
+}
+```
+
+## 📚 Store Actions
+
+通过 `window.daily_avatar_UI.store.getState()` 可以获取到所有的 Actions。
+
+定义文件: [src/store/actions.ts](./src/store/actions.ts)
+
+常用 Actions:
+
+- `registerUpdateHandler(handler: () => Promise<void>)`: 注册更新头像的核心逻辑。
+- `showNotification(message: string, type?: 'success' | 'error' | 'info', duration?: number)`: 显示通知。
+- `togglePanel(show?: boolean)`: 切换面板的显示/隐藏。
+- `toggleSettings(show?: boolean)`: 切换设置界面的显示/隐藏。
+
 ## 📄 License
 
 MIT
