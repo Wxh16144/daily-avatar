@@ -1,12 +1,7 @@
 
 import { useStore } from '@/store';
 import { useState } from 'preact/hooks';
-
-const API_QUERY_VARIABLES = [
-  { var: '$TIMESTAMP', desc: '当前时间戳' },
-  { var: '$VERSION', desc: '当前版本' },
-  { var: '$RANDOM', desc: '随机数，每次请求都会变化' },
-];
+import { API_QUERY_VARIABLES } from '@/constants/variables';
 
 export function ApiQueryParamsEditor() {
   const { config, updateConfig } = useStore();
@@ -66,13 +61,15 @@ export function ApiQueryParamsEditor() {
       >
         + 添加参数
       </button>
-      <div class="mt-2 p-2 rounded border border-blue-200 bg-blue-50/80">
-        <div class="text-xs font-bold mb-1">可用变量说明</div>
+      <div class="mt-2 p-2 rounded border border-gray-100 bg-gray-50">
+        <div class="text-xs font-medium text-gray-500 mb-2">
+          可用变量说明 <span class="text-[10px] font-normal text-gray-400 ml-1">(须以 $ 开头)</span>
+        </div>
         <div class="text-xs space-y-1">
-          {API_QUERY_VARIABLES.map(v => (
-            <div key={v.var} class="flex justify-between items-center">
-              <code class="bg-indigo-100 text-indigo-800 px-1 rounded font-semibold">{v.var}</code>
-              <span class="text-gray-600 text-right">{v.desc}</span>
+          {Object.entries(API_QUERY_VARIABLES).map(([key, desc]) => (
+            <div key={key} class="flex justify-between items-center">
+              <code class="bg-gray-200 text-gray-600 px-1 rounded">{key}</code>
+              <span class="text-gray-400 text-right">{desc}</span>
             </div>
           ))}
         </div>

@@ -36,7 +36,7 @@ export function AvatarSourceSettings() {
           <div class="p-3 rounded-xl bg-gray-50/50 border border-gray-100 space-y-4">
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">
-                API地址
+                API 地址
               </label>
               <input
                 type="text"
