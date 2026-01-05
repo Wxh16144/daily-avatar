@@ -79,6 +79,7 @@ export default defineConfig(
       banner: generateBanner({
         ...script.banner,
         ...sharedBanner,
+        downloadURL: `https://unpkg.com/@wuxh/daily-avatar/userscripts/${script.id}.user.js`,
       }),
       define: sharedDefine,
     }
