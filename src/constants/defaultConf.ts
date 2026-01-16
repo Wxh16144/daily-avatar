@@ -16,6 +16,11 @@ export const DEFAULT_CONFIG: Config = {
   notifyOnFailure: true,
   notifyOnStart: false,
 
+  // 重试设置
+  enableRetry: false,
+  retryCount: 0, // 不启用重试
+  retryInterval: 5 * 60 * 1000, // 5分钟
+
   // 源设置
   avatarSource: 'random',
   apiUrl: '',
