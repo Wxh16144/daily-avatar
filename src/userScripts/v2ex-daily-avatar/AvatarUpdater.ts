@@ -31,6 +31,19 @@ export class AvatarUpdater {
     return new Blob([u8arr], { type: mime });
   }
 
+  async checkIsLogin() {
+    try {
+      const response = await fetch('/');
+      const html = await response.text();
+      const dom = $('<div>').html(html);
+      const tools = dom.find('#Top .tools');
+      return !['登录', '注册'].some(text => tools.text().includes(text))
+    } catch (error) {
+      console.error('Check login status failed:', error);
+      return false;
+    }
+  }
+
   async fetchAvatarImage() {
     const config = this.configManager.getConfig();
     let url = '';
@@ -91,7 +104,7 @@ export class AvatarUpdater {
         onload: (response) => {
           if (response.status === 200 && response.responseText) {
             const html = response.responseText;
-            const dom = $(html);
+            const dom = $('<div>').html(html);
             const once = dom.find('input[name="once"]').val();
             resolve(once ? String(once) : null);
           } else {
@@ -142,6 +155,10 @@ export class AvatarUpdater {
 
   async execute() {
     try {
+      const isLogin = await this.checkIsLogin();
+      if (!isLogin) {
+        throw new Error('未登录 V2EX，无法更新头像');
+      }
       const blob = await this.fetchAvatarImage();
       await this.uploadAvatar(blob);
 
