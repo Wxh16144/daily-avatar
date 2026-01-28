@@ -13,7 +13,7 @@ export const MOOD_TEMPLATES: MoodTemplate[] = [
     path: '/mood-avatars',
     name: '默认风格',
     description: '默认的心情头像风格',
-    copyright: '作者自制'
+    copyright: '默认'
   },
   {
     id: 'notion-style',
@@ -22,5 +22,19 @@ export const MOOD_TEMPLATES: MoodTemplate[] = [
     description: '抽象风格，适合表达多样心情',
     copyright: '小红书用户：呼噜噜^'
   },
+  {
+    id:'line-dog',
+    path: '/mood-avatars/templates/line-dog',
+    name:"线条小狗",
+    description:"线条小狗的一周精神状态",
+    copyright:"小红书用户：RH",
+  },
+  {
+    id:'wangzai-weekly',
+    path:'/mood-avatars/templates/wangzai-weekly',
+    name:'旺仔一周头像',
+    description:'超可爱的旺仔一周头像快快换起来吧！',
+    copyright:"小红书用户：旺仔俱乐部",
+  }
   // more templates can be added here
 ];
