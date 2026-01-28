@@ -18,6 +18,7 @@ export function WeeklyMoodSettings() {
   const [moodAvatars, setMoodAvatars] = useState<Record<string, string>>({});
   const [applyingTemplate, setApplyingTemplate] = useState<string | null>(null);
   const [showTemplates, setShowTemplates] = useState(false);
+  const [previewTemplateId, setPreviewTemplateId] = useState<string | null>(null);
 
   useEffect(() => {
     if (configManager) {
@@ -160,26 +161,95 @@ export function WeeklyMoodSettings() {
         <div class="space-y-2 pt-2 border-t border-gray-100 animate-in fade-in slide-in-from-top-2 duration-200">
           <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider">选择模版</h4>
           <div class="grid grid-cols-1 gap-3">
-            {MOOD_TEMPLATES.map(template => (
-              <div key={template.id} class="flex items-center justify-between p-3 rounded-xl bg-white border border-gray-200 hover:border-blue-300 transition-colors">
-                <div class="flex-1 min-w-0 mr-3">
-                  <div class="flex items-center space-x-2">
-                    <span class="text-sm font-medium text-gray-900">{template.name}</span>
-                    <span class="text-[10px] px-1.5 py-0.5 rounded bg-gray-100 text-gray-500 border border-gray-200 truncate max-w-[120px]">
-                      {template.copyright}
-                    </span>
-                  </div>
-                  <p class="text-xs text-gray-500 mt-0.5 truncate">{template.description}</p>
-                </div>
-                <button
-                  onClick={() => applyTemplate(template)}
-                  disabled={applyingTemplate === template.id}
-                  class="px-3 py-1.5 text-xs font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+            {MOOD_TEMPLATES.map(template => {
+              const isPreviewing = previewTemplateId === template.id;
+              return (
+                <div 
+                  key={template.id} 
+                  class={`group flex flex-col p-3 rounded-xl bg-white border transition-all duration-200 cursor-pointer ${
+                    isPreviewing 
+                      ? 'border-blue-500 ring-2 ring-blue-100 shadow-sm' 
+                      : 'border-gray-200 hover:border-blue-500 hover:ring-1 hover:ring-blue-100 hover:shadow-md'
+                  }`}
+                  onClick={() => setPreviewTemplateId(isPreviewing ? null : template.id)}
                 >
-                  {applyingTemplate === template.id ? '应用中...' : '使用模版'}
-                </button>
-              </div>
-            ))}
+                  <div class="flex items-center justify-between">
+                    <div class="flex-1 min-w-0 mr-3">
+                      <div class="flex items-center space-x-2">
+                        <span class="text-sm font-medium text-gray-900">{template.name}</span>
+                        <span class="text-[10px] px-1.5 py-0.5 rounded bg-gray-100 text-gray-500 border border-gray-200 truncate max-w-[120px]">
+                          {template.copyright}
+                        </span>
+                      </div>
+                      <p class="text-xs text-gray-500 mt-0.5 truncate">{template.description}</p>
+                    </div>
+                    
+                    <div class="flex items-center gap-3">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          applyTemplate(template);
+                        }}
+                        disabled={applyingTemplate === template.id}
+                        class="px-3 py-1.5 text-xs font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+                      >
+                        {applyingTemplate === template.id ? '应用中...' : '使用模版'}
+                      </button>
+                      <div class="flex items-center text-gray-400 transition-colors group-hover:text-blue-500">
+                        <span class={`text-[10px] mr-1 transition-all duration-200 ${
+                          isPreviewing 
+                            ? 'opacity-100 translate-x-0' 
+                            : 'opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0'
+                        }`}>
+                          {isPreviewing ? '收起' : '预览'}
+                        </span>
+                        <div class={`transition-transform duration-200 ${isPreviewing ? 'rotate-180' : ''}`}>
+                          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                          </svg>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {isPreviewing && (
+                    <div class="mt-3 pt-3 border-t border-gray-100 animate-in fade-in slide-in-from-top-1 duration-200 cursor-default" onClick={(e) => e.stopPropagation()}>
+                      <div class="flex items-center justify-between mb-2 px-1">
+                        <span class="text-[10px] font-medium text-gray-400">预览效果</span>
+                        <span class="text-[10px] text-gray-300">共 7 款</span>
+                      </div>
+                      <div class="grid grid-cols-7 gap-1.5">
+                        {WEEK_DAYS.map((day) => {
+                          const fileExt = template.id === 'default' ? 'svg' : 'jpg';
+                          const previewUrl = `${ASSETS_BASE_URL}${template.path}/${day.key}.${fileExt}`;
+                          
+                          return (
+                            <div key={day.key} class="flex flex-col items-center">
+                              <div class="w-full aspect-square rounded-md overflow-hidden bg-gray-50 border border-gray-100">
+                                <img
+                                  src={previewUrl}
+                                  alt={day.label}
+                                  class="w-full h-full object-cover"
+                                  loading="lazy"
+                                  onError={(e) => {
+                                    const target = e.currentTarget;
+                                    const fallbackUrl = `${ASSETS_BASE_URL}/mood-avatars/${day.key}.svg`;
+                                    if (target.src !== fallbackUrl) {
+                                      target.src = fallbackUrl;
+                                    }
+                                  }}
+                                />
+                              </div>
+                              <span class="text-[9px] text-gray-400 mt-1 scale-90">{day.label}</span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </div>
       )}
