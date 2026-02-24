@@ -10,43 +10,16 @@
   <script type="module">
     Promise.all([
       import('/src/main.tsx'),
-      import('/src/lib/configManager/Browser.ts')
-    ]).then(([{ init }, { BrowserConfigManager }]) => {
+      import('/src/lib/configManager/Browser.ts'),
+      import('/src/demo.ts')
+    ]).then(([{ init }, { BrowserConfigManager }, { setupDemo }]) => {
       console.log('Initializing daily-avatar UI...');
-      const configManager = new BrowserConfigManager();
+      const configManager = new BrowserConfigManager('daily-avatar-demo');
       init(configManager, {
         title: 'Daily Avatar Demo',
       });
 
-      const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-
-      if (typeof window.daily_avatar_UI !== 'undefined') {
-        const { store } = window.daily_avatar_UI;
-        store.getState().registerUpdateHandler(async () => {
-
-          // 打印当前设置
-          const config = store.getState().config;
-          console.log('%cCurrent Configuration:', 'color: purple; font-weight: bold;', config);
-
-          // [2000, 5000] ms 随机延迟
-          const delay = Math.floor(Math.random() * 3000) + 2000;
-          console.log(`Waiting for ${delay} ms before recording update result...`);
-          await sleep(delay);
-
-          globalThis.console.log(
-            '%c@daily-avatar/store',
-            'color: green; font-weight: bold; font-size: 1rem;',
-          );
-
-          // 随机记录成功/失败
-          if (Math.random() > 0.5) {
-            console.log('%cUpdate succeeded!', 'color: blue;');
-          } else {
-            console.error('%cUpdate failed!', 'color: red;');
-            throw new Error('Simulated update failure');
-          }
-        });
-      }
+      setupDemo(configManager);
     });
   </script>
 </body>
