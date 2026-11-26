@@ -62,6 +62,25 @@ const scripts: ScriptConfig[] = [
       noframes: '',
     },
   },
+  {
+    id: 'v2ex-avatar-mask',
+    banner: {
+      // 把所有 V2EX 用户头像替换成丑头像（仅页面显示）
+      name: 'V2EX Avatar Mask',
+      namespace: 'https://github.com/wxh16144/daily-avatar',
+      version: pkg.version,
+      description: 'Replace every V2EX avatar with a generated one (display only).',
+      icon: 'https://www.v2ex.com/static/img/icon_rayps_64.png',
+      match: [
+        '*://v2ex.com/*',
+        '*://www.v2ex.com/*',
+      ],
+      grant: ['GM_registerMenuCommand'],
+      ...sharedBanner,
+      'run-at': 'document-idle',
+      noframes: '',
+    },
+  },
 ]
 
 export default defineConfig(

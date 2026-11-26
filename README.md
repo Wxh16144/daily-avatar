@@ -96,6 +96,16 @@ interface AppConfig {
 - `togglePanel(show?: boolean)`: 切换面板的显示/隐藏。
 - `toggleSettings(show?: boolean)`: 切换设置界面的显示/隐藏。
 
+## 🐒 开箱即用的用户脚本
+
+| 脚本 | 说明 | 安装 |
+| --- | --- | --- |
+| V2EX Daily Avatar | 每天自动更换 V2EX 头像 | [安装](https://unpkg.com/@wuxh/daily-avatar/userscripts/v2ex-daily-avatar.user.js) |
+| V2EX Avatar Mask | 把页面上所有 V2EX 头像替换成丑头像（仅显示层） | [安装](https://unpkg.com/@wuxh/daily-avatar/userscripts/v2ex-avatar-mask.user.js) |
+
+源码分别位于 [src/userScripts/v2ex-daily-avatar](./src/userScripts/v2ex-daily-avatar) 与
+[src/userScripts/v2ex-avatar-mask](./src/userScripts/v2ex-avatar-mask)。
+
 ## 📄 License
 
 [MIT License](./LICENSE)
