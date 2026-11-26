@@ -1,6 +1,6 @@
-# V2EX / linux.do Avatar Mask 油猴脚本
+# V2EX / linux.do / 知乎 Avatar Mask 油猴脚本
 
-把 V2EX 与 linux.do 页面上所有用户头像替换成 [ugly-avatar-server](https://github.com/Wxh16144/ugly-avatar-server) 生成的丑头像。
+把 V2EX、linux.do、知乎页面上所有用户头像替换成 [ugly-avatar-server](https://github.com/Wxh16144/ugly-avatar-server) 生成的丑头像。
 
 **只改页面显示，不上传头像、不触碰账号数据**，刷新或禁用脚本即恢复原样。
 
@@ -9,8 +9,10 @@
 - 全站头像替换
   - V2EX：首页（含「最近查看过的主题」）、主题列表、主题详情、回复区、顶栏
   - linux.do：列表页、主题页、用户卡片等所有 `img.avatar`
+  - 知乎：所有 `img.Avatar`（注意大写 A），含回答列表、评论区、顶栏
 - 按用户名生成，同一个人永远是同一个丑头像；seed 来源按站点适配
-  （V2EX 取 `alt` / `data-uid` / 成员链接，linux.do 从 `user_avatar/<user>/` 路径解析）
+  （V2EX 取 `alt` / `data-uid` / 成员链接；linux.do 从 `user_avatar/<user>/` 路径解析；
+  知乎取图片 id 的 32 位 hash）
 - 支持 CSS 选择器排除名单，例如 linux.do 站长的头像保持原样
 - 全局只用一个尺寸（默认 `s=128`）：每个用户只对应一个 URL，服务端只渲染一次、浏览器只缓存一份
 - 尺寸动态测量：替换前读取原头像的布局尺寸并记忆，用 inline style 锁定，版面不会变
@@ -25,7 +27,7 @@
 
 1. 安装 [Tampermonkey](https://www.tampermonkey.net/) 或 [Violentmonkey](https://violentmonkey.github.io/)
 2. [点击安装脚本](https://unpkg.com/@wuxh/daily-avatar/userscripts/v2ex-avatar-mask.user.js)
-3. 打开 V2EX 或 linux.do，滚动页面即可看到头像变化
+3. 打开 V2EX、linux.do 或知乎，滚动页面即可看到头像变化
 
 ## ⚙️ 配置
 
@@ -143,6 +145,20 @@ const linuxDo = {
   的头像没有 `avatar` 类也没有 `data-uid`，只能通过成员链接定位。
 - linux.do 的 `img.avatar` 的 `alt` 是空的，主题页连 `title` 都没有，用户名只能从
   `/user_avatar/linux.do/<username>/` 或 `/letter_avatar/<username>/` 路径里取。
+- 知乎的头像类名是大写的 `img.Avatar`，且 `src` 的 hash 与 `srcset` 里的完全一致，
+  所以取 32 位 hex 作为 seed（去掉 `v2-` 前缀和 `_l` / `_qhd` 等后缀），
+  同一个人在任何页面都能落到同一个丑头像。默认头像会被多个用户共用，因此他们共享一个丑头像。
+
+### 关于 srcset
+
+知乎、Discourse 缩略图等站点的图片带 `srcset`，这里有两个坑（均已实测确认）：
+
+1. `srcset` 候选的优先级高于 `src`，只改 `src` 在 2x 屏幕上**完全不生效**；
+2. 只把 `srcset` 删掉也不行 —— 元素会保留原先选中的 2x 密度，
+   `naturalWidth` 会变成真实值的一半，布局和错误图判断都会被带偏。
+
+所以脚本把 `srcset` 覆盖成 `<新 url> 1x`，原始值存到 `data-ua-srcset`，还原时精确写回。
+若站点（如 React 重渲染）把 `srcset` 改了回去，观察器会重新补上。
 
 ## 📄 License
 

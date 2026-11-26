@@ -81,8 +81,67 @@ const linuxDo: SiteAdapter = {
   },
 };
 
+/**
+ * 知乎：头像是 `img.Avatar`（注意是大写 A），页面是 React SPA。
+ *
+ * seed 用图片 id（32 位 hex），前后缀一并去掉：
+ *   v2-52556cb0ba7ef67af15bd02532ee27e4_l.jpg     -> 52556cb0...
+ *   v2-52556cb0ba7ef67af15bd02532ee27e4_qhd.jpg   -> 同上
+ *   7c0d3d719be6ce13c6d64f9cd3a0cd60_l.jpg        -> 7c0d3d71...
+ * 实测同一张图在 src 与 srcset 里的 id 完全一致，不同后缀也只是同一 id 的变体，
+ * 所以同一个人在任何位置都会落到同一个丑头像。
+ *
+ * 兜底顺序：图片 id -> `a[href*="/people/"]` 的 url_token -> alt 显示名。
+ *
+ * 注意：知乎的图片一律带 srcset，脚本会把它覆盖成 `<url> 1x`（详见 pipeline）。
+ */
+const ZH_IMAGE_ID = /(?:^|\/)(?:v\d+-)?([0-9a-f]{32})(?:[_./-]|$)/i;
+const ZH_PEOPLE = /\/people\/([^/?#]+)/;
+const ZH_ALT_PROFILE = /^点击打开(.+?)的主页$/;
+
+function zhihuImageId(img: HTMLImageElement): string | null {
+  for (const raw of [img.getAttribute('src'), img.getAttribute('srcset')]) {
+    if (!raw) continue;
+    // srcset 可能有多项，逐个看
+    for (const candidate of raw.split(',')) {
+      const id = candidate.trim().split(/\s+/)[0]?.match(ZH_IMAGE_ID);
+      if (id) return id[1].toLowerCase();
+    }
+  }
+  return null;
+}
+
+const zhihu: SiteAdapter = {
+  id: 'zhihu',
+  matches: (url) =>
+    url.hostname === 'zhihu.com' || url.hostname.endsWith('.zhihu.com'),
+  rules: [
+    {
+      name: '头像',
+      selectors: ['img.Avatar'],
+    },
+  ],
+  getSeed: (img) => {
+    const imageId = zhihuImageId(img);
+    if (imageId) return imageId;
+
+    const href = img.closest('a[href*="/people/"]')?.getAttribute('href');
+    const token = href?.match(ZH_PEOPLE);
+    if (token) return decodeURIComponent(token[1]);
+
+    const alt = img.alt.trim();
+    if (alt) {
+      const profile = alt.match(ZH_ALT_PROFILE);
+      if (profile) return profile[1].trim();
+      if (!/^(点击|查看|打开)/.test(alt)) return alt;
+    }
+
+    return null;
+  },
+};
+
 // 新增站点时在这里追加一条配置即可，核心管线无需改动。
-export const ADAPTERS: SiteAdapter[] = [v2ex, linuxDo];
+export const ADAPTERS: SiteAdapter[] = [v2ex, linuxDo, zhihu];
 
 export function resolveAdapter(url: URL): SiteAdapter | null {
   return ADAPTERS.find((adapter) => adapter.matches(url)) ?? null;

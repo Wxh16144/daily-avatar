@@ -9,6 +9,7 @@ const ATTR_TRIES = 'data-ua-tries';
 const ATTR_STYLE = 'data-ua-style';
 const ATTR_BOX = 'data-ua-box';
 const ATTR_FILTER = 'data-ua-filter';
+const ATTR_SRCSET = 'data-ua-srcset';
 
 const MAX_TRIES = 3;
 
@@ -77,7 +78,7 @@ export class AvatarPipeline {
       childList: true,
       subtree: true,
       attributes: true,
-      attributeFilter: ['src'],
+      attributeFilter: ['src', 'srcset'],
     });
 
     this.scan(document);
@@ -107,6 +108,7 @@ export class AvatarPipeline {
       .forEach((img) => {
         const original = img.getAttribute(ATTR_ORIGINAL);
         if (original) img.setAttribute('src', original);
+        this.restoreSrcset(img);
         this.unpinBox(img);
         img.setAttribute(ATTR_STATE, 'restored');
         img.removeAttribute(ATTR_TARGET);
@@ -138,6 +140,7 @@ export class AvatarPipeline {
   }
 
   private resetElement(img: HTMLImageElement): void {
+    this.restoreSrcset(img);
     this.unpinBox(img);
     this.unblur(img);
     img.removeAttribute(ATTR_STATE);
@@ -231,8 +234,12 @@ export class AvatarPipeline {
     const src = img.getAttribute('src');
 
     if (state === 'masked') {
-      // src 仍是我们的图，说明没有变化，直接跳过，避免重复替换
-      if (isMaskedSrc(src)) return;
+      if (isMaskedSrc(src)) {
+        // 站点（例如 React 重渲染）把 srcset 改了回去，补回我们的 1x 版本
+        const srcset = img.getAttribute('srcset');
+        if (srcset !== null && !isMaskedSrc(srcset)) this.applySrcset(img, src!);
+        return;
+      }
 
       // 站点把 src 改了回来，重新伪装一次（次数受 MAX_TRIES 限制）
       const tries = Number(img.getAttribute(ATTR_TRIES) || '0') + 1;
@@ -425,12 +432,38 @@ export class AvatarPipeline {
 
     const original = img.currentSrc || img.src || '';
     img.setAttribute(ATTR_STATE, 'masked');
+    // srcset 必须一起改，否则高 DPR 屏幕上换图不生效
+    this.applySrcset(img, url);
     // 尺寸在入队时就已锁定，这里只需要换图
     // 命中浏览器缓存时不会重新发请求；未命中时同样要遵循配置的 Referer 策略
     img.setAttribute('referrerpolicy', CONFIG.referrerPolicy);
     img.setAttribute('src', url);
     this.stats.masked += 1;
     this.hooks.onSwap?.(img, original);
+  }
+
+  /**
+   * 带 srcset 的图片（知乎、Discourse 缩略图等）有两个坑，实测确认：
+   * 1. srcset 候选优先于 src，只改 src 在高 DPR 屏幕上完全不生效；
+   * 2. 只把 srcset 删掉也不行 —— 元素会保留原先选中的 2x 密度，
+   *    naturalWidth 变成真实值的一半，布局和错误图判断都会被带偏。
+   * 所以这里把 srcset 覆盖成 `<url> 1x`，让密度显式变成 1。
+   */
+  private applySrcset(img: HTMLImageElement, url: string): void {
+    const origin = img.getAttribute('srcset');
+    if (origin === null) return;
+
+    if (!img.hasAttribute(ATTR_SRCSET)) {
+      img.setAttribute(ATTR_SRCSET, origin);
+    }
+    img.setAttribute('srcset', `${url} 1x`);
+  }
+
+  private restoreSrcset(img: HTMLImageElement): void {
+    const origin = img.getAttribute(ATTR_SRCSET);
+    if (origin === null) return;
+    img.setAttribute('srcset', origin);
+    img.removeAttribute(ATTR_SRCSET);
   }
 
   /** 模糊模式：记住原始 inline filter 后叠加上模糊，零网络请求 */

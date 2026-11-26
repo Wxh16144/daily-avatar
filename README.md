@@ -101,7 +101,7 @@ interface AppConfig {
 | 脚本 | 说明 | 安装 |
 | --- | --- | --- |
 | V2EX Daily Avatar | 每天自动更换 V2EX 头像 | [安装](https://unpkg.com/@wuxh/daily-avatar/userscripts/v2ex-daily-avatar.user.js) |
-| V2EX / linux.do Avatar Mask | 把页面上的用户头像替换成丑头像（仅显示层） | [安装](https://unpkg.com/@wuxh/daily-avatar/userscripts/v2ex-avatar-mask.user.js) |
+| V2EX / linux.do / 知乎 Avatar Mask | 把页面上的用户头像替换成丑头像（仅显示层） | [安装](https://unpkg.com/@wuxh/daily-avatar/userscripts/v2ex-avatar-mask.user.js) |
 
 源码分别位于 [src/userScripts/v2ex-daily-avatar](./src/userScripts/v2ex-daily-avatar) 与
 [src/userScripts/v2ex-avatar-mask](./src/userScripts/v2ex-avatar-mask)。
