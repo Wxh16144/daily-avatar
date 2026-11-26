@@ -69,11 +69,12 @@ const scripts: ScriptConfig[] = [
       name: 'V2EX Avatar Mask',
       namespace: 'https://github.com/wxh16144/daily-avatar',
       version: pkg.version,
-      description: 'Replace every V2EX avatar with a generated one (display only).',
+      description: 'Replace every V2EX / linux.do avatar with a generated one (display only).',
       icon: 'https://www.v2ex.com/static/img/icon_rayps_64.png',
       match: [
         '*://v2ex.com/*',
         '*://www.v2ex.com/*',
+        '*://linux.do/*',
       ],
       grant: ['GM_registerMenuCommand'],
       ...sharedBanner,

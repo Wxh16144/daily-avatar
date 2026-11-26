@@ -1,13 +1,17 @@
-# V2EX Avatar Mask 油猴脚本
+# V2EX / linux.do Avatar Mask 油猴脚本
 
-把 V2EX 页面上所有用户头像替换成 [ugly-avatar-server](https://github.com/Wxh16144/ugly-avatar-server) 生成的丑头像。
+把 V2EX 与 linux.do 页面上所有用户头像替换成 [ugly-avatar-server](https://github.com/Wxh16144/ugly-avatar-server) 生成的丑头像。
 
 **只改页面显示，不上传头像、不触碰账号数据**，刷新或禁用脚本即恢复原样。
 
 ## ✨ 功能特性
 
-- 全站头像替换：首页（含「最近查看过的主题」）、主题列表、主题详情、回复区、顶栏
-- 按用户名（`alt`）生成，同一个人永远是同一个丑头像；`data-uid` 与成员链接兜底
+- 全站头像替换
+  - V2EX：首页（含「最近查看过的主题」）、主题列表、主题详情、回复区、顶栏
+  - linux.do：列表页、主题页、用户卡片等所有 `img.avatar`
+- 按用户名生成，同一个人永远是同一个丑头像；seed 来源按站点适配
+  （V2EX 取 `alt` / `data-uid` / 成员链接，linux.do 从 `user_avatar/<user>/` 路径解析）
+- 支持 CSS 选择器排除名单，例如 linux.do 站长的头像保持原样
 - 全局只用一个尺寸（默认 `s=128`）：每个用户只对应一个 URL，服务端只渲染一次、浏览器只缓存一份
 - 尺寸动态测量：替换前读取原头像的布局尺寸并记忆，用 inline style 锁定，版面不会变
 - 预加载队列（并发 6）+ 浏览器强缓存，不冲击服务端限流
@@ -20,7 +24,7 @@
 
 1. 安装 [Tampermonkey](https://www.tampermonkey.net/) 或 [Violentmonkey](https://violentmonkey.github.io/)
 2. [点击安装脚本](https://unpkg.com/@wuxh/daily-avatar/userscripts/v2ex-avatar-mask.user.js)
-3. 打开 V2EX，滚动页面即可看到头像变化
+3. 打开 V2EX 或 linux.do，滚动页面即可看到头像变化
 
 ## ⚙️ 配置
 
@@ -80,6 +84,28 @@ const ADAPTERS = [{
 
 - 规则按顺序匹配，先命中者生效，越具体的放越前。
 - 新增位置时加一条选择器即可，不需要声明尺寸，也不需要改核心逻辑。
+
+### 排除名单
+
+规则可以带 `exclude`，命中其中任意一条选择器就跳过该元素。linux.do 就靠它跳过站长的头像：
+
+```js
+const LD_EXCLUDE = [
+  'img.avatar[src*="/user_avatar/linux.do/neo/"]',
+  'img.avatar[src*="/letter_avatar/neo/"]',
+];
+
+const linuxDo = {
+  id: 'linux-do',
+  matches: (url) => url.hostname === 'linux.do',
+  rules: [{ name: '头像', selectors: ['img.avatar'], exclude: LD_EXCLUDE }],
+};
+```
+
+用 `*=` 而不是用户样式表里常见的 `^=`，这样 CDN 域名换成 `cdn3.ldstatic.com`
+或走站点自身域名（`https://linux.do/user_avatar/...`）时同样生效。
+
+要排除更多人或整个站点，往 `exclude` 里继续加选择器即可。
 - `referrerPolicy` 决定是否携带 `Referer`：
   - `no-referrer`（默认）：不发 Referer，适配「配置了 `ALLOWED_ORIGINS` 且 `ALLOW_EMPTY_REFERER=true`」的服务端
   - `no-referrer-when-downgrade`：浏览器默认行为，适配「白名单已包含 `v2ex.com` 且禁止空 Referer」的服务端
@@ -100,8 +126,10 @@ const ADAPTERS = [{
 - 服务端默认限流 `200 req / 60s / IP`，脚本用并发 6 + 浏览器强缓存（`immutable`，1 年）避免触发。
 - 节点侧栏头像是 closed shadow DOM，外部脚本无法访问，不在替换范围内。
 - 错误图固定 256×256，只要 `size` 不等于 256，脚本就能识别错误图并保留原头像。
-- 匹配规则是 `img.avatar` 与 `a[href*="/member/"] img` 的并集：V2EX 首页「最近查看过的主题」
+- V2EX 的匹配规则是 `img.avatar` 与 `a[href*="/member/"] img` 的并集：首页「最近查看过的主题」
   的头像没有 `avatar` 类也没有 `data-uid`，只能通过成员链接定位。
+- linux.do 的 `img.avatar` 的 `alt` 是空的，主题页连 `title` 都没有，用户名只能从
+  `/user_avatar/linux.do/<username>/` 或 `/letter_avatar/<username>/` 路径里取。
 
 ## 📄 License
 

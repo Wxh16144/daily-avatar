@@ -144,10 +144,16 @@ export class AvatarPipeline {
     };
   }
 
+  /** 元素是否被这条规则命中（含排除判断） */
+  private matchesRule(img: HTMLImageElement, rule: AvatarRule): boolean {
+    if (rule.exclude?.some((selector) => img.matches(selector))) return false;
+    return rule.selectors.some((selector) => img.matches(selector));
+  }
+
   /** 按规则优先级找出元素属于哪条规则 */
   private ruleFor(img: HTMLImageElement): AvatarRule | null {
     for (const rule of this.adapter.rules) {
-      if (rule.selectors.some((selector) => img.matches(selector))) return rule;
+      if (this.matchesRule(img, rule)) return rule;
     }
     return null;
   }
@@ -161,6 +167,7 @@ export class AvatarPipeline {
           if (img.hasAttribute(ATTR_TARGET) || isMaskedSrc(img.getAttribute('src'))) {
             return;
           }
+          if (!this.matchesRule(img, rule)) return;
           this.consider(img, rule);
         });
     }

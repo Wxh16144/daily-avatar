@@ -7,6 +7,11 @@ export interface AvatarRule {
   name: string;
   /** 命中头像的 CSS 选择器 */
   selectors: string[];
+  /**
+   * 排除的选择器：命中其中任意一条就跳过该元素。
+   * 用于「除了某几个人之外全部替换」这类需求。
+   */
+  exclude?: string[];
 }
 
 export interface SiteAdapter {

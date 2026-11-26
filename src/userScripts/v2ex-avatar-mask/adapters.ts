@@ -40,8 +40,49 @@ const v2ex: SiteAdapter = {
   },
 };
 
+/**
+ * linux.do 基于 Discourse：
+ * - 头像统一是 `img.avatar`，`alt` 为空，主题页连 `title` 也没有
+ * - 用户名只存在于 URL 路径里：
+ *     /user_avatar/linux.do/<username>/<size>/<hash>_<n>.png
+ *     /letter_avatar/<username>/<size>/<hash>.png
+ * 所以 seed 优先从 src 解析，title/alt 只作为兜底。
+ */
+const LD_USER_AVATAR = /\/user_avatar\/[^/]+\/([^/]+)\//;
+const LD_LETTER_AVATAR = /\/letter_avatar\/([^/]+)\//;
+
+/** 站长的头像保持原样，不参与替换 */
+const LD_EXCLUDE = [
+  'img.avatar[src*="/user_avatar/linux.do/neo/"]',
+  'img.avatar[src*="/letter_avatar/neo/"]',
+];
+
+const linuxDo: SiteAdapter = {
+  id: 'linux-do',
+  matches: (url) => url.hostname === 'linux.do',
+  rules: [
+    {
+      name: '头像',
+      selectors: ['img.avatar'],
+      exclude: LD_EXCLUDE,
+    },
+  ],
+  getSeed: (img) => {
+    const src = img.getAttribute('src') || img.currentSrc || '';
+
+    const fromUrl = src.match(LD_USER_AVATAR) ?? src.match(LD_LETTER_AVATAR);
+    if (fromUrl) return decodeURIComponent(fromUrl[1]);
+
+    // 列表页的 title 形如 "Neo - 原始发帖人"
+    const title = (img.getAttribute('title') || '').split(' - ')[0].trim();
+    if (title) return title;
+
+    return img.alt.trim() || null;
+  },
+};
+
 // 新增站点时在这里追加一条配置即可，核心管线无需改动。
-export const ADAPTERS: SiteAdapter[] = [v2ex];
+export const ADAPTERS: SiteAdapter[] = [v2ex, linuxDo];
 
 export function resolveAdapter(url: URL): SiteAdapter | null {
   return ADAPTERS.find((adapter) => adapter.matches(url)) ?? null;
