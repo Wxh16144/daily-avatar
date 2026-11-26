@@ -23,8 +23,16 @@ export interface SiteAdapter {
   getSeed: (img: HTMLImageElement) => string | null;
 }
 
+/**
+ * 处理方式：
+ * - mask：下载生成的丑头像并替换
+ * - blur：只给原头像加 CSS 模糊，不发任何请求
+ */
+export type MaskMode = 'mask' | 'blur';
+
 export interface PipelineStats {
   masked: number;
+  blurred: number;
   failed: number;
   pending: number;
   active: number;

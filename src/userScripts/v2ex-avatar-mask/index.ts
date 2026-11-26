@@ -11,6 +11,7 @@ function main() {
   const effect = createSwapEffect();
   const pipeline = new AvatarPipeline(adapter, {
     onSwap: (img, originalUrl) => effect.play(img, originalUrl),
+    onReset: () => effect.cancelAll(),
   });
 
   pipeline.start();

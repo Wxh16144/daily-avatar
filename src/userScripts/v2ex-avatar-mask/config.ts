@@ -7,6 +7,7 @@
  * format      服务端输出格式
  * size        全局唯一边长：每个用户只对应一个 URL，服务端只需渲染一次
  * effect      particles | fade | none
+ * blurPx      模糊模式的模糊半径（菜单里可切换到模糊模式，零请求）
  */
 export interface UserConfig {
   host: string;
@@ -34,6 +35,8 @@ export interface UserConfig {
   referrerPolicy: ReferrerPolicy;
   /** 服务端出错时返回的错误图尺寸，必须与 size 不同才能用于识别错误响应 */
   errorImageSize: number;
+  /** 模糊模式的模糊半径（px）；只改 CSS，不发请求 */
+  blurPx: number;
 }
 
 export const CONFIG: UserConfig = {
@@ -51,4 +54,5 @@ export const CONFIG: UserConfig = {
   rootMargin: '200px',
   referrerPolicy: 'no-referrer',
   errorImageSize: 256,
+  blurPx: 6,
 };

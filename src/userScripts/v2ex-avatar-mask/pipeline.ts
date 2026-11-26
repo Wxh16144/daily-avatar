@@ -1,5 +1,5 @@
 import { CONFIG } from './config';
-import type { AvatarRule, PipelineStats, SiteAdapter } from './types';
+import type { AvatarRule, MaskMode, PipelineStats, SiteAdapter } from './types';
 import { buildUrl, isMaskedSrc, measureBox, type Box } from './url';
 
 const ATTR_STATE = 'data-ua-state';
@@ -8,6 +8,7 @@ const ATTR_TARGET = 'data-ua-target';
 const ATTR_TRIES = 'data-ua-tries';
 const ATTR_STYLE = 'data-ua-style';
 const ATTR_BOX = 'data-ua-box';
+const ATTR_FILTER = 'data-ua-filter';
 
 const MAX_TRIES = 3;
 
@@ -19,6 +20,8 @@ interface Job {
 export interface PipelineHooks {
   /** 头像已替换为 url，originalUrl 是替换前的绝对地址 */
   onSwap?: (img: HTMLImageElement, originalUrl: string) => void;
+  /** 还原或切换模式前调用，用来打断还在播放的过渡动画 */
+  onReset?: () => void;
 }
 
 export class AvatarPipeline {
@@ -32,7 +35,14 @@ export class AvatarPipeline {
 
   private queue: Job[] = [];
   private active = 0;
-  private stats: PipelineStats = { masked: 0, failed: 0, pending: 0, active: 0 };
+  private mode: MaskMode = 'mask';
+  private stats: PipelineStats = {
+    masked: 0,
+    blurred: 0,
+    failed: 0,
+    pending: 0,
+    active: 0,
+  };
 
   private observer: MutationObserver | null = null;
   private viewport: IntersectionObserver | null = null;
@@ -49,7 +59,7 @@ export class AvatarPipeline {
     if (this.enabled) return;
     this.enabled = true;
     this.generation += 1;
-    this.stats = { masked: 0, failed: 0, pending: 0, active: 0 };
+    this.stats = { masked: 0, blurred: 0, failed: 0, pending: 0, active: 0 };
     this.queue = [];
     this.active = 0;
     this.inflight.clear();
@@ -88,8 +98,10 @@ export class AvatarPipeline {
     this.candidates.clear();
   }
 
-  /** 恢复原头像与原始 style，并把元素标记为 restored，避免观察器立刻再次替换 */
+  /** 恢复原头像、原始 style 与原始 filter，并把元素标记为 restored，避免观察器立刻再次替换 */
   restore(): void {
+    this.hooks.onReset?.();
+
     document
       .querySelectorAll<HTMLImageElement>(`img[${ATTR_STATE}="masked"]`)
       .forEach((img) => {
@@ -102,6 +114,13 @@ export class AvatarPipeline {
         img.removeAttribute(ATTR_TRIES);
       });
 
+    document
+      .querySelectorAll<HTMLImageElement>(`img[${ATTR_STATE}="blurred"]`)
+      .forEach((img) => {
+        this.unblur(img);
+        img.setAttribute(ATTR_STATE, 'restored');
+      });
+
     // 飞行中的请求不会再有结果，必须把这些元素放回可处理状态，否则会永久卡在 pending
     this.resetQueued();
     document
@@ -109,6 +128,7 @@ export class AvatarPipeline {
       .forEach((img) => this.resetElement(img));
 
     this.stats.masked = 0;
+    this.stats.blurred = 0;
     this.stats.failed = 0;
   }
 
@@ -119,6 +139,7 @@ export class AvatarPipeline {
 
   private resetElement(img: HTMLImageElement): void {
     this.unpinBox(img);
+    this.unblur(img);
     img.removeAttribute(ATTR_STATE);
     img.removeAttribute(ATTR_TARGET);
     img.removeAttribute(ATTR_ORIGINAL);
@@ -130,6 +151,22 @@ export class AvatarPipeline {
     this.stop();
     this.restore();
     this.start();
+  }
+
+  /**
+   * 切换处理方式。模糊模式只改 CSS filter，完全不发请求。
+   * 切换前会先把当前效果还原，避免两种模式叠加。
+   */
+  setMode(mode: MaskMode): void {
+    if (mode === this.mode && this.enabled) return;
+    this.stop();
+    this.restore();
+    this.mode = mode;
+    this.start();
+  }
+
+  getMode(): MaskMode {
+    return this.mode;
   }
 
   isEnabled(): boolean {
@@ -183,6 +220,12 @@ export class AvatarPipeline {
 
   private consider(img: HTMLImageElement, rule: AvatarRule): void {
     if (!this.enabled || !img.isConnected) return;
+
+    // 模糊模式不需要视口门控也不需要网络，直接生效
+    if (this.mode === 'blur') {
+      this.blur(img);
+      return;
+    }
 
     const state = img.getAttribute(ATTR_STATE);
     const src = img.getAttribute('src');
@@ -388,6 +431,27 @@ export class AvatarPipeline {
     img.setAttribute('src', url);
     this.stats.masked += 1;
     this.hooks.onSwap?.(img, original);
+  }
+
+  /** 模糊模式：记住原始 inline filter 后叠加上模糊，零网络请求 */
+  private blur(img: HTMLImageElement): void {
+    if (img.getAttribute(ATTR_STATE) === 'blurred') return;
+
+    if (!img.hasAttribute(ATTR_FILTER)) {
+      img.setAttribute(ATTR_FILTER, img.style.filter || '');
+    }
+    img.setAttribute(ATTR_STATE, 'blurred');
+    img.style.filter = `blur(${CONFIG.blurPx}px)`;
+    this.stats.blurred += 1;
+  }
+
+  private unblur(img: HTMLImageElement): void {
+    const original = img.getAttribute(ATTR_FILTER);
+    if (original === null) return;
+    img.style.filter = original;
+    img.removeAttribute(ATTR_FILTER);
+    // 只清理我们自己可能留下的空 style 属性
+    if (!img.getAttribute('style')) img.removeAttribute('style');
   }
 
   private pinBox(img: HTMLImageElement, box: Box): void {
