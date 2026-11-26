@@ -157,27 +157,43 @@ export class AvatarPipeline {
       root
         .querySelectorAll<HTMLImageElement>(rule.selectors.join(','))
         .forEach((img) => {
-          // 已经被更靠前的规则接管
-          if (img.hasAttribute(ATTR_TARGET)) return;
+          // 已经被前面的规则接管，或已经是我们插入的图，都不再重复处理
+          if (img.hasAttribute(ATTR_TARGET) || isMaskedSrc(img.getAttribute('src'))) {
+            return;
+          }
           this.consider(img, rule);
         });
     }
+  }
+
+  /** 这张图当前显示的就是我们插入的头像 */
+  private isReplaced(img: HTMLImageElement): boolean {
+    return (
+      img.getAttribute(ATTR_STATE) === 'masked' ||
+      isMaskedSrc(img.getAttribute('src'))
+    );
   }
 
   private consider(img: HTMLImageElement, rule: AvatarRule): void {
     if (!this.enabled || !img.isConnected) return;
 
     const state = img.getAttribute(ATTR_STATE);
+    const src = img.getAttribute('src');
 
     if (state === 'masked') {
-      // 站点把 src 改了回来，重新伪装一次
-      if (img.getAttribute('src') === img.getAttribute(ATTR_TARGET)) return;
+      // src 仍是我们的图，说明没有变化，直接跳过，避免重复替换
+      if (isMaskedSrc(src)) return;
+
+      // 站点把 src 改了回来，重新伪装一次（次数受 MAX_TRIES 限制）
       const tries = Number(img.getAttribute(ATTR_TRIES) || '0') + 1;
       if (tries > MAX_TRIES) return;
       img.setAttribute(ATTR_TRIES, String(tries));
-      img.setAttribute(ATTR_ORIGINAL, img.getAttribute('src') || '');
+      img.setAttribute(ATTR_ORIGINAL, src || '');
       img.removeAttribute(ATTR_STATE);
     } else if (state === 'pending' || state === 'failed' || state === 'restored') {
+      return;
+    } else if (isMaskedSrc(src)) {
+      // 状态被清掉了但 src 还是我们的图，说明已经替换过，不再处理
       return;
     }
 
@@ -207,8 +223,10 @@ export class AvatarPipeline {
   private enqueue(img: HTMLImageElement, rule: AvatarRule): void {
     if (!this.enabled || !img.isConnected) return;
 
+    // 已替换 / 排队中 / 已失败的都不再重复入队
+    if (this.isReplaced(img)) return;
     const state = img.getAttribute(ATTR_STATE);
-    if (state === 'pending' || state === 'masked') return;
+    if (state === 'pending' || state === 'failed' || state === 'restored') return;
 
     const seed = this.adapter.getSeed(img);
     if (!seed) return;
@@ -246,14 +264,19 @@ export class AvatarPipeline {
 
   /**
    * 读取「官方排版」的头像尺寸。
-   * 已经是我们插入的图时不能量它，改用上次记录的尺寸。
+   * 一旦测量过就记在 data-ua-box 里，后续（包括被站点改回 src 后重测）直接复用，
+   * 绝不拿我们已经插入的图去量。
    */
   private readBox(img: HTMLImageElement): Box | null {
-    if (isMaskedSrc(img.getAttribute('src')) || img.getAttribute(ATTR_STATE) === 'masked') {
-      const stored = img.getAttribute(ATTR_BOX);
-      const [w, h] = (stored || '').split('x').map(Number);
+    const stored = img.getAttribute(ATTR_BOX);
+    if (stored) {
+      const [w, h] = stored.split('x').map(Number);
       if (w >= 1 && h >= 1) return { width: w, height: h };
     }
+
+    // 已经替换过但没留下尺寸记录：此时布局尺寸来自我们的图，不可信
+    if (this.isReplaced(img)) return null;
+
     return measureBox(img);
   }
 
@@ -342,6 +365,11 @@ export class AvatarPipeline {
         // 入队时已经锁了尺寸，失败要还原，否则空的 style 会一直挂在元素上
         this.unpinBox(img);
       }
+      return;
+    }
+
+    // 已经是我们的图了（例如同一元素被并发入队），不要重复换图和重复播动画
+    if (img.getAttribute(ATTR_STATE) === 'masked' && isMaskedSrc(img.getAttribute('src'))) {
       return;
     }
 
